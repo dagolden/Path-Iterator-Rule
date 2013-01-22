@@ -106,11 +106,11 @@ sub iter {
               or return;
             my ( $item, $depth ) = @{$task}{qw/path depth/};
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
+            my $string_item = "$item";
             if ( !$opts->{follow_symlinks} ) {
-                redo LOOP if -l $item;
+                redo LOOP if -l $string_item;
             }
             local $_ = $item;
-            my $string_item = "$item";
             $stash->{_depth} = $depth;
             my $interest =
               try { $self->test( $item, $stash ) }
