@@ -238,7 +238,7 @@ sub _rulify {
 
 sub _taskify {
     my ( $self, $depth, @paths ) = @_;
-    return map { { path => $_, depth => $depth } } sort @paths;
+    return map { { path => $_, depth => $depth } } sort { "$a" cmp "$b" } @paths;
 }
 
 sub _unique_id {
