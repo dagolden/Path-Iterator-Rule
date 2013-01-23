@@ -56,7 +56,7 @@ sub add_helper {
         }
     }
     else {
-        Carp::carp( "Can't add rule '$name' because it conflicts with an existing method" );
+        Carp::carp("Can't add rule '$name' because it conflicts with an existing method");
     }
 }
 
@@ -118,7 +118,10 @@ sub iter {
             my $prune = $interest && !( 0 + $interest ); # capture "0 but true"
             $interest += 0;                              # then ignore "but true"
 
-            if ( -d $string_item && !$seen{$self->_unique_id($string_item, $opts)}++ && !$prune ) {
+            if (   -d $string_item
+                && !$seen{ $self->_unique_id( $string_item, $opts ) }++
+                && !$prune )
+            {
                 if ( !-r $string_item ) {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
