@@ -112,11 +112,11 @@ sub iter {
                 redo LOOP if -l $string_item;
             }
             local $_ = $item;
-            $stash->{_depth} = $depth;
 
             # by default, we're interested in everything and prune nothing
             my ( $interest, $prune ) = ( 1, 0 );
             if ($has_rules) {
+                $stash->{_depth} = $depth;
                 if ( $opts->{error_handler} ) {
                     $interest =
                       try { $self->test( $item, $base, $stash ) }
