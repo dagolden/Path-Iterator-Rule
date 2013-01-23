@@ -117,9 +117,8 @@ sub iter {
             catch { $opts->{error_handler}->( $item, $_ ) };
             my $prune = $interest && !( 0 + $interest ); # capture "0 but true"
             $interest += 0;                              # then ignore "but true"
-            my $unique_id = $self->_unique_id( $string_item, $opts );
 
-            if ( -d $string_item && !$seen{$unique_id}++ && !$prune ) {
+            if ( -d $string_item && !$seen{$self->_unique_id($string_item, $opts)}++ && !$prune ) {
                 if ( !-r $string_item ) {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
