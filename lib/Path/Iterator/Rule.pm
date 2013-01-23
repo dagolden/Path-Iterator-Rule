@@ -138,17 +138,24 @@ sub iter {
                 if ( !-r $string_item ) {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
-                elsif ( $opts->{depthfirst} ) {
-                    my @next = $self->_taskify( $opts, $depth + 1, $self->_children($item) );
-                    # for postorder, requeue as reference to signal it can be returned
-                    # without being retested
-                    push @next, [$item], $base, $depth
-                      if $interest && $opts->{depthfirst} > 0;
-                    unshift @queue, @next;
-                    redo LOOP if $opts->{depthfirst} > 0;
-                }
                 else {
-                    push @queue, $self->_taskify( $opts, $depth + 1, $self->_children($item) );
+                    my @paths = $self->_children($item);
+                    if ( $opts->{sorted} ) {
+                        @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
+                    }
+                    my @next = map { ( $_->[1], $_->[0], $depth+1 ) } @paths;
+
+                    if ( $opts->{depthfirst} ) {
+                        # for postorder, requeue as reference to signal it can be returned
+                        # without being retested
+                        push @next, [$item], $base, $depth
+                          if $interest && $opts->{depthfirst} > 0;
+                        unshift @queue, @next;
+                        redo LOOP if $opts->{depthfirst} > 0;
+                    }
+                    else {
+                        push @queue, @next;
+                    }
                 }
             }
             return $item
@@ -246,14 +253,6 @@ sub _rulify {
         push @rules, $rule;
     }
     return @rules;
-}
-
-sub _taskify {
-    my ( $self, $opts, $depth, @paths ) = @_;
-    if ( $opts->{sorted} ) {
-        @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
-    }
-    return map { ( $_->[1], $_->[0], $depth ) } @paths;
 }
 
 sub _is_unique {
