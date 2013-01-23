@@ -529,7 +529,7 @@ Here is a summary of features for comparison to other file finding modules:
 * custom rules implemented with callbacks
 * breadth-first (default) or pre- or post-order depth-first searching
 * follows symlinks (by default, but can be disabled)
-* directories visited only once (no infinite loops)
+* directories visited only once (no infinite loop; can be disabled)
 * doesn't chdir during operation
 * provides an API for extensions
 
@@ -955,6 +955,22 @@ skipped).  To disable these categories, put the following statement at the
 correct scope:
 
   no warnings 'Path::Iterator::Rule';
+
+=head1 PERFORMANCE
+
+By default, C<Path::Iterator::Rule> iterator options are "slow but safe".  They
+ensure uniqueness, return files in sorted order, and throw nice error messages
+if something goes wrong.
+
+If you want speed, set these options:
+
+    my %options = (
+        loop_safe => 0,
+        sorted => 0,
+        error_handler => undef
+    );
+
+    my $iter = $rule->iter( @dirs, \%options );
 
 =head1 CAVEATS
 

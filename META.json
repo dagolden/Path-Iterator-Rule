@@ -41,7 +41,6 @@
             "Carp" : "0",
             "Data::Clone" : "0",
             "File::Basename" : "0",
-            "IO::Dir" : "0",
             "List::Util" : "0",
             "Number::Compare" : "0.02",
             "Scalar::Util" : "0",

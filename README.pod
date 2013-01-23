@@ -62,7 +62,7 @@ follows symlinks (by default, but can be disabled)
 
 =item *
 
-directories visited only once (no infinite loops)
+directories visited only once (no infinite loop; can be disabled)
 
 =item *
 
@@ -120,7 +120,7 @@ C<depthfirst> -- Controls order of results.  Valid values are "1" (post-order, d
 
 =item *
 
-C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error.
+C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error. If set to undef, error handling is disabled.
 
 =item *
 
@@ -405,13 +405,18 @@ version.
 
 Rules are implemented as (usually anonymous) subroutines callbacks that return
 a value indicating whether or not the rule matches.  These callbacks are called
-with two arguments.  The first argument is a path, which is
+with three arguments.  The first argument is a path, which is
 also locally aliased as the C<$_> global variable for convenience in simple
 tests.
 
   $rule->and( sub { -r -w -x $_ } ); # tests $_
 
-The second argument is a hash reference that can be used to maintain state.
+The second argument is the basename of the path, which is useful for certain
+types of name checks:
+
+  $rule->and( sub { $_[1] =~ /foo|bar/ } ); "foo" or "bar" in basename;
+
+The third argument is a hash reference that can be used to maintain state.
 Keys beginning with an underscore are B<reserved> for C<Path::Iterator::Rule>
 to provide additional data about the search in progress.
 For example, the C<_depth> key is used to support minimum and maximum
@@ -446,7 +451,7 @@ a depth of 3:
 
   $rule->and(
     sub {
-      my ($path, $stash) = @_;
+      my ($path, $basename, $stash) = @_;
       return $stash->{_depth} <= 3 ? 1 : "0 but true";
     }
   );
@@ -473,15 +478,14 @@ if the filename is "foo":
   package Path::Iterator::Rule::Foo;
 
   use Path::Iterator::Rule;
-  use File::Basename qw/basename/;
 
   Path::Iterator::Rule->add_helper(
     foo => sub {
       my @args = @_; # do this to customize closure with arguments
       return sub {
-        my ($item) = shift;
+        my ($item, $basename) = shift;
         return if -d "$item";
-        return basename($item) =~ /^foo$/;
+        return $basename =~ /^foo$/;
       }
     }
   );
@@ -512,9 +516,11 @@ _objectify -- given a path, return an object
 
 =item *
 
-_chilren -- given a directory, return an (unsorted) list of entries within it, excluding "." and ".."
+_children -- given a directory, return an (unsorted) list of [ basename, full path ] entries within it, excluding "." and ".."
 
 =back
+
+Note that C<_children> should return a I<list> of I<tuples>, where the tuples are basename and full path.
 
 See L<Path::Class::Rule> source for an example.
 
@@ -526,6 +532,22 @@ skipped).  To disable these categories, put the following statement at the
 correct scope:
 
   no warnings 'Path::Iterator::Rule';
+
+=head1 PERFORMANCE
+
+By default, C<Path::Iterator::Rule> iterator options are "slow but safe".  They
+ensure uniqueness, return files in sorted order, and throw nice error messages
+if something goes wrong.
+
+If you want speed, set these options:
+
+    my %options = (
+        loop_safe => 0,
+        sorted => 0,
+        error_handler => undef
+    );
+
+    my $iter = $rule->iter( @dirs, \%options );
 
 =head1 CAVEATS
 

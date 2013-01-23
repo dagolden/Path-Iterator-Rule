@@ -2,14 +2,23 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [INCOMPATIBLE CHANGES]
+
+    - Test subroutines now get path, basename and stash
+      instead of just path and stash; this saves substantial
+      overhead on name checks.
+
     [ADDED]
 
-    - Add 'sorted' option that defaults to true
+    - Add 'sorted' option that defaults to true; disabling
+      this can improve speed for directories with many files
 
     [CHANGED]
 
     - Setting 'error_handler' to undef disables error
       checks for speed
+
+    - Various other optimizations for improved performance
 
 0.001     2013-01-22 06:22:44 America/New_York
 
