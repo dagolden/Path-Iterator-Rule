@@ -6,7 +6,7 @@ Path::Iterator::Rule - Iterative, recursive file finder
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -129,6 +129,10 @@ C<follow_symlinks> -- Follow directory symlinks when true. Default is 1.
 =item *
 
 C<loop_safe> -- Prevents visiting the same directory more than once when true.  Default is 1.
+
+=item *
+
+C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
 
 =back
 

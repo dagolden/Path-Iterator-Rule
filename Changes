@@ -6,6 +6,11 @@ Revision history for Path-Iterator-Rule
 
     - Add 'sorted' option that defaults to true
 
+    [CHANGED]
+
+    - Setting 'error_handler' to undef disables error
+      checks for speed
+
 0.001     2013-01-22 06:22:44 America/New_York
 
     - First release, based on Path::Class::Rule 0.015

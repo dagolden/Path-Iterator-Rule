@@ -113,13 +113,20 @@ sub iter {
             }
             local $_ = $item;
             $stash->{_depth} = $depth;
-            my $interest =
-              try { $self->test( $item, $stash ) }
-            catch { $opts->{error_handler}->( $item, $_ ) };
+            my $interest;
+            if ( $opts->{error_handler} ) {
+                $interest =
+                  try { $self->test( $item, $stash ) }
+                catch { $opts->{error_handler}->( $item, $_ ) };
+            }
+            else {
+                $interest = $self->test( $item, $stash );
+            }
             my $prune = $interest && !( 0 + $interest ); # capture "0 but true"
             $interest += 0;                              # then ignore "but true"
 
-            if (   -d $string_item && $self->_is_unique($string_item, $opts, $stash) && !$prune ) {
+            if ( -d $string_item && $self->_is_unique( $string_item, $opts, $stash ) && !$prune )
+            {
                 if ( !-r $string_item ) {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
@@ -260,7 +267,7 @@ sub _is_unique {
             warnings::warnif("Could not stat $type '$string_item'");
             $unique_id = $string_item;
         }
-        return ! $stash->{_seen}{$unique_id}++;
+        return !$stash->{_seen}{$unique_id}++;
     }
     else {
         return 1;
@@ -568,7 +575,7 @@ current directory is used (C<".">).  Valid options include:
 
 =for :list
 * C<depthfirst> -- Controls order of results.  Valid values are "1" (post-order, depth-first search), "0" (breadth-first search) or "-1" (pre-order, depth-first search). Default is 0.
-* C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error.
+* C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error. If set to undef, error handling is disabled.
 * C<follow_symlinks> -- Follow directory symlinks when true. Default is 1.
 * C<loop_safe> -- Prevents visiting the same directory more than once when true.  Default is 1.
 * C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
