@@ -28,7 +28,7 @@ use namespace::clean;
 
 sub new {
     my $class = shift;
-    return bless { rules => [ sub { 1 } ] }, ref $class || $class;
+    return bless { rules => [ sub () { 1 } ] }, ref $class || $class;
 }
 
 sub clone {
