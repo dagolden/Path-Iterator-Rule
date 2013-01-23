@@ -315,14 +315,14 @@ sub _generate_name_matcher {
         return sub {
             my $name = "$_[1]";
             return ( first { $name =~ $_ } @patterns ) ? 1 : 0;
-        }
+          }
     }
     else {
         my $pattern = $patterns[0];
         return sub {
             my $name = "$_[1]";
             return $name =~ $pattern ? 1 : 0;
-        }
+          }
     }
 }
 
@@ -334,7 +334,7 @@ my %complex_helpers = (
     },
     iname => sub {
         Carp::croak("No patterns provided to 'iname'") unless @_;
-        _generate_name_matcher( map { _regexify($_, "i") } @_ );
+        _generate_name_matcher( map { _regexify( $_, "i" ) } @_ );
     },
     min_depth => sub {
         Carp::croak("No depth argument given to 'min_depth'") unless @_;
