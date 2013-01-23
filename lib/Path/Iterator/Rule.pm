@@ -120,11 +120,11 @@ sub iter {
             if ( !$opt_follow_symlinks ) {
                 redo LOOP if -l $string_item;
             }
-            local $_ = $item;
 
             # by default, we're interested in everything and prune nothing
             my ( $interest, $prune ) = ( 1, 0 );
             if ($has_rules) {
+                local $_ = $item;
                 $stash->{_depth} = $depth;
                 if ($opt_error_handler) {
                     $interest =
