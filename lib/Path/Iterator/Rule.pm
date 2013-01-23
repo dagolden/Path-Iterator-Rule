@@ -16,7 +16,6 @@ use Data::Clone qw/data_clone/;
 use File::Basename qw/basename/;
 use List::Util qw/first/;
 use Number::Compare 0.02;
-use IO::Dir;
 use Scalar::Util qw/blessed/;
 use Text::Glob qw/glob_to_regex/;
 use Try::Tiny;
@@ -74,8 +73,8 @@ sub _children {
     my $self = shift;
     my $path = "" . shift; # stringify objects
     return () unless -d $path;
-    my $dir = IO::Dir->new($path);
-    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } $dir->read;
+    opendir( my $dh, $path );
+    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } readdir $dh;
 }
 
 #--------------------------------------------------------------------------#
