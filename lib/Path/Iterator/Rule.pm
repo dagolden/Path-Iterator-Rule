@@ -124,7 +124,7 @@ sub iter {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
                 elsif ( $opts->{depthfirst} ) {
-                    my @next = $self->_taskify( $depth + 1, $self->_children($item) );
+                    my @next = $self->_taskify( $opts, $depth + 1, $self->_children($item) );
                     # for postorder, requeue as reference to signal it can be returned
                     # without being retested
                     push @next, { path => [$item], depth => $depth }
@@ -133,7 +133,7 @@ sub iter {
                     redo LOOP if $opts->{depthfirst} > 0;
                 }
                 else {
-                    push @queue, $self->_taskify( $depth + 1, $self->_children($item) );
+                    push @queue, $self->_taskify( $opts, $depth + 1, $self->_children($item) );
                 }
             }
             return $item
@@ -237,8 +237,8 @@ sub _rulify {
 }
 
 sub _taskify {
-    my ( $self, $depth, @paths ) = @_;
-    if ( $self->{sorted} ) {
+    my ( $self, $opts, $depth, @paths ) = @_;
+    if ( $opts->{sorted} ) {
         return map { { path => $_, depth => $depth } } sort { "$a" cmp "$b" } @paths;
     }
     else {
