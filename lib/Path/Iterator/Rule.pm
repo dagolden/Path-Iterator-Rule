@@ -125,7 +125,9 @@ sub iter {
             my $prune = $interest && !( 0 + $interest ); # capture "0 but true"
             $interest += 0;                              # then ignore "but true"
 
-            if ( -d $string_item && $self->_is_unique( $string_item, $opts, $stash ) && !$prune )
+            if (   -d $string_item
+                && !$prune
+                && ( !$opts->{loop_safe} || $self->_is_unique( $string_item, $stash ) ) )
             {
                 if ( !-r $string_item ) {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
@@ -249,24 +251,19 @@ sub _taskify {
 }
 
 sub _is_unique {
-    my ( $self, $string_item, $opts, $stash ) = @_;
-    if ( $opts->{loop_safe} ) {
-        my $unique_id;
-        my @st = eval { stat $string_item };
-        @st = eval { lstat $string_item } unless @st;
-        if (@st) {
-            $unique_id = join( ",", $st[0], $st[1] );
-        }
-        else {
-            my $type = -d $string_item ? 'directory' : 'file';
-            warnings::warnif("Could not stat $type '$string_item'");
-            $unique_id = $string_item;
-        }
-        return !$stash->{_seen}{$unique_id}++;
+    my ( $self, $string_item, $stash ) = @_;
+    my $unique_id;
+    my @st = eval { stat $string_item };
+    @st = eval { lstat $string_item } unless @st;
+    if (@st) {
+        $unique_id = join( ",", $st[0], $st[1] );
     }
     else {
-        return 1;
+        my $type = -d $string_item ? 'directory' : 'file';
+        warnings::warnif("Could not stat $type '$string_item'");
+        $unique_id = $string_item;
     }
+    return !$stash->{_seen}{$unique_id}++;
 }
 
 #--------------------------------------------------------------------------#
