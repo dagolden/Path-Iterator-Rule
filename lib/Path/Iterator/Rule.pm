@@ -977,6 +977,29 @@ If you want speed, set these options:
 
     my $iter = $rule->iter( @dirs, \%options );
 
+Rules will shortcut on failure, so be sure to put rules likely to fail
+early in a rule chain.
+
+Consider:
+
+    $r1 = Path::Iterator::Rule->new->name(qr/foo/)->file;
+    $r2 = Path::Iterator::Rule->new->file->name(qr/foo/);
+
+If there are lots of files, but only a few containing "foo", then
+C<$r1> above will be faster.
+
+Rules are implemented as code references, so long chains have
+some overhead.  Consider testing with a custom coderef that
+combines several tests into one.
+
+Consider:
+
+    $r3 = Path::Iterator::Rule->new->and( sub { -x -w -r $_ } );
+    $r4 = Path::Iterator::Rule->new->executable->writeable->readable;
+
+Rule C<$r3> above will be much faster, not only because it stacks
+the file tests, but because it requires only a single code reference.
+
 =head1 CAVEATS
 
 Some features are still unimplemented:
