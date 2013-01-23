@@ -979,8 +979,9 @@ If you want speed, set these options:
 
 Depending on the file structure being searched, you might also want to set C<<
 depthfirst => 1 >>. If you have lots of nested directories and all the files at
-the bottom, a depth first might do less work, particularly if the search will
-be halted early (e.g. finding the first N matches.)
+the bottom, a depth first search might do less work or use less memory,
+particularly if the search will be halted early (e.g. finding the first N
+matches.)
 
 Rules will shortcut on failure, so be sure to put rules likely to fail
 early in a rule chain.
@@ -1076,6 +1077,15 @@ to include or exclude, with control over recursion.  A callback is applied to
 each file (or directory) in the set.  There is no iterator.  There is no
 control over ordering.  Symlinks are not followed.  It has several extra
 features for checksumming the set and creating tarballs with F</bin/tar>.
+
+=head1 THANKS
+
+Thank you to Ricardo Signes (rjbs) for inspiring me to write yet another file
+finder module, for writing file finder optimization benchmarks, and tirelessly
+running my code over and over to see if it got faster.
+
+=for :list
+* See L<the speed of Perl file finders|http://rjbs.manxome.org/rubric/entry/1981>
 
 =cut
 
