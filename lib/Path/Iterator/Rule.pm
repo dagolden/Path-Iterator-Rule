@@ -94,9 +94,17 @@ sub iter {
         ref( $_[0] )  && !blessed( $_[0] )  ? shift
       : ref( $_[-1] ) && !blessed( $_[-1] ) ? pop
       :                                       {};
-    my $opts      = { %defaults, %$args };
-    my $stash     = {};
-    my $has_rules = @{ $self->{rules} };
+    my %opts = ( %defaults, %$args );
+
+    # unroll these for efficiency
+    my $opt_depthfirst      = $opts{depthfirst};
+    my $opt_follow_symlinks = $opts{follow_symlinks};
+    my $opt_sorted          = $opts{sorted};
+    my $opt_loop_safe       = $opts{loop_safe};
+    my $opt_error_handler   = $opts{error_handler};
+    my $has_rules           = @{ $self->{rules} };
+    my $stash               = {};
+
     # queue structure: flat list in tuples of 3: (object, basename, depth)
     # if object is arrayref, then that's a special case signal that it
     # was already of interest and can finally be returned for postorder searches
@@ -109,7 +117,7 @@ sub iter {
             return unless $item;
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
             my $string_item = "$item";
-            if ( !$opts->{follow_symlinks} ) {
+            if ( !$opt_follow_symlinks ) {
                 redo LOOP if -l $string_item;
             }
             local $_ = $item;
@@ -118,10 +126,10 @@ sub iter {
             my ( $interest, $prune ) = ( 1, 0 );
             if ($has_rules) {
                 $stash->{_depth} = $depth;
-                if ( $opts->{error_handler} ) {
+                if ($opt_error_handler) {
                     $interest =
                       try { $self->test( $item, $base, $stash ) }
-                    catch { $opts->{error_handler}->( $item, $_ ) };
+                    catch { $opt_error_handler->( $item, $_ ) };
                 }
                 else {
                     $interest = $self->test( $item, $base, $stash );
@@ -133,25 +141,25 @@ sub iter {
             # if it's a directory, maybe add children to the queue
             if (   -d $string_item
                 && !$prune
-                && ( !$opts->{loop_safe} || $self->_is_unique( $string_item, $stash ) ) )
+                && ( !$opt_loop_safe || $self->_is_unique( $string_item, $stash ) ) )
             {
                 if ( !-r $string_item ) {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
                 else {
                     my @paths = $self->_children($item);
-                    if ( $opts->{sorted} ) {
+                    if ($opt_sorted) {
                         @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
                     }
-                    my @next = map { ( $_->[1], $_->[0], $depth+1 ) } @paths;
+                    my @next = map { ( $_->[1], $_->[0], $depth + 1 ) } @paths;
 
-                    if ( $opts->{depthfirst} ) {
+                    if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
                         # without being retested
                         push @next, [$item], $base, $depth
-                          if $interest && $opts->{depthfirst} > 0;
+                          if $interest && $opt_depthfirst > 0;
                         unshift @queue, @next;
-                        redo LOOP if $opts->{depthfirst} > 0;
+                        redo LOOP if $opt_depthfirst > 0;
                     }
                     else {
                         push @queue, @next;
