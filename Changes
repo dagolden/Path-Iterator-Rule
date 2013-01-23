@@ -2,7 +2,11 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [ADDED]
+
+    - Add 'sorted' option that defaults to true
+
 0.001     2013-01-22 06:22:44 America/New_York
 
-  - First release, based on Path::Class::Rule 0.015
+    - First release, based on Path::Class::Rule 0.015
 

@@ -85,6 +85,7 @@ sub _children {
 my %defaults = (
     depthfirst      => 0,
     follow_symlinks => 1,
+    sorted          => 1,
     loop_safe       => ( $^O eq 'MSWin32' ? 0 : 1 ),       # No inode #'s on Windows
     error_handler   => sub { die sprintf( "%s: %s", @_ ) },
 );
@@ -240,7 +241,12 @@ sub _rulify {
 
 sub _taskify {
     my ( $self, $depth, @paths ) = @_;
-    return map { { path => $_, depth => $depth } } sort { "$a" cmp "$b" } @paths;
+    if ( $self->{sorted} ) {
+        return map { { path => $_, depth => $depth } } sort { "$a" cmp "$b" } @paths;
+    }
+    else {
+        return map { { path => $_, depth => $depth } } @paths;
+    }
 }
 
 sub _unique_id {
@@ -568,6 +574,7 @@ current directory is used (C<".">).  Valid options include:
 * C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error.
 * C<follow_symlinks> -- Follow directory symlinks when true. Default is 1.
 * C<loop_safe> -- Prevents visiting the same directory more than once when true.  Default is 1.
+* C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
 
 Filesystem loops might exist from either hard or soft links.  The C<loop_safe>
 option prevents infinite loops, but adds some overhead by making C<stat> calls.
