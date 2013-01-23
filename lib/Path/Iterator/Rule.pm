@@ -97,15 +97,16 @@ sub iter {
     my $opts      = { %defaults, %$args };
     my $stash     = {};
     my $has_rules = @{ $self->{rules} };
+    # queue structure: flat list in tuples of 3: (object, basename, depth)
+    # if object is arrayref, then that's a special case signal that it
+    # was already of interest and can finally be returned for postorder searches
     my @queue =
-      map { { base => basename("$_"), path => $self->_objectify($_), depth => 0 } }
-      @_ ? @_ : '.';
+      map { ( $self->_objectify($_), basename("$_"), 0 ) } @_ ? @_ : '.';
 
     return sub {
         LOOP: {
-            my $task = shift @queue
-              or return;
-            my ( $base, $item, $depth ) = @{$task}{qw/base path depth/};
+            my ( $item, $base, $depth ) = splice( @queue, 0, 3 );
+            return unless $item;
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
             my $string_item = "$item";
             if ( !$opts->{follow_symlinks} ) {
@@ -141,7 +142,7 @@ sub iter {
                     my @next = $self->_taskify( $opts, $depth + 1, $self->_children($item) );
                     # for postorder, requeue as reference to signal it can be returned
                     # without being retested
-                    push @next, { base => $base, path => [$item], depth => $depth }
+                    push @next, [$item], $base, $depth
                       if $interest && $opts->{depthfirst} > 0;
                     unshift @queue, @next;
                     redo LOOP if $opts->{depthfirst} > 0;
@@ -252,7 +253,7 @@ sub _taskify {
     if ( $opts->{sorted} ) {
         @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
     }
-    return map { { base => $_->[0], path => $_->[1], depth => $depth } } @paths;
+    return map { ( $_->[1], $_->[0], $depth ) } @paths;
 }
 
 sub _is_unique {
