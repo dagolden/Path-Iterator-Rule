@@ -67,7 +67,7 @@ sub add_helper {
 
 sub _objectify {
     my ( $self, $path ) = @_;
-    return $path;
+    return "$path";
 }
 
 sub _children {
@@ -75,7 +75,7 @@ sub _children {
     my $path = "" . shift; # stringify objects
     return () unless -d $path;
     my $dir = IO::Dir->new($path);
-    return map { "$path/$_" } grep { $_ ne "." && $_ ne ".." } $dir->read;
+    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } $dir->read;
 }
 
 #--------------------------------------------------------------------------#
@@ -97,7 +97,9 @@ sub iter {
       : ref( $_[-1] ) && !blessed( $_[-1] ) ? pop
       :                                       {};
     my $opts = { %defaults, %$args };
-    my @queue = map { { path => $self->_objectify($_), depth => 0 } } @_ ? @_ : '.';
+    my @queue =
+      map { { base => basename("$_"), path => $self->_objectify($_), depth => 0 } }
+      @_ ? @_ : '.';
     my $stash = {};
     my %seen;
 
@@ -105,7 +107,7 @@ sub iter {
         LOOP: {
             my $task = shift @queue
               or return;
-            my ( $item, $depth ) = @{$task}{qw/path depth/};
+            my ( $base, $item, $depth ) = @{$task}{qw/base path depth/};
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
             my $string_item = "$item";
             if ( !$opts->{follow_symlinks} ) {
@@ -116,11 +118,11 @@ sub iter {
             my $interest;
             if ( $opts->{error_handler} ) {
                 $interest =
-                  try { $self->test( $item, $stash ) }
+                  try { $self->test( $item, $base, $stash ) }
                 catch { $opts->{error_handler}->( $item, $_ ) };
             }
             else {
-                $interest = $self->test( $item, $stash );
+                $interest = $self->test( $item, $base, $stash );
             }
             my $prune = $interest && !( 0 + $interest ); # capture "0 but true"
             $interest += 0;                              # then ignore "but true"
@@ -134,7 +136,7 @@ sub iter {
                     my @next = $self->_taskify( $opts, $depth + 1, $self->_children($item) );
                     # for postorder, requeue as reference to signal it can be returned
                     # without being retested
-                    push @next, { path => [$item], depth => $depth }
+                    push @next, { base => $base, path => [$item], depth => $depth }
                       if $interest && $opts->{depthfirst} > 0;
                     unshift @queue, @next;
                     redo LOOP if $opts->{depthfirst} > 0;
@@ -174,10 +176,9 @@ sub or {
     my $self    = shift;
     my @rules   = $self->_rulify( "or", @_ );
     my $coderef = sub {
-        my $item = shift;
         my $result;
         for my $rule (@rules) {
-            $result = $rule->($item) || 0;
+            $result = $rule->(@_) || 0;
             return $result if $result; # want to shortcut on "0 but true"
         }
         return $result;
@@ -190,8 +191,7 @@ sub not {
     my @rules   = $self->_rulify( "not", @_ );
     my $obj     = $self->new->and(@rules);
     my $coderef = sub {
-        my $item   = shift;
-        my $result = $obj->test($item);
+        my $result = $obj->test(@_);
         # XXX what to do about "0 but true"? Ignore it?
         return $result ? "0" : "1";
     };
@@ -203,18 +203,17 @@ sub skip {
     my @rules   = $self->_rulify( "not", @_ );
     my $obj     = $self->new->or(@rules);
     my $coderef = sub {
-        my $item   = shift;
-        my $result = $obj->test($item);
+        my $result = $obj->test(@_);
         return $result ? "0 but true" : "1";
     };
     return $self->and($coderef);
 }
 
 sub test {
-    my ( $self, $item, $stash ) = @_;
+    my ( $self, $item, $base, $stash ) = @_;
     my $result;
     for my $rule ( @{ $self->{rules} } ) {
-        $result = $rule->( $item, $stash ) || 0;
+        $result = $rule->( $item, $base, $stash ) || 0;
         return $result if !( 0 + $result ); # want to shortcut on "0 but true"
     }
     return $result;
@@ -246,11 +245,9 @@ sub _rulify {
 sub _taskify {
     my ( $self, $opts, $depth, @paths ) = @_;
     if ( $opts->{sorted} ) {
-        return map { { path => $_, depth => $depth } } sort { "$a" cmp "$b" } @paths;
+        @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
     }
-    else {
-        return map { { path => $_, depth => $depth } } @paths;
-    }
+    return map { { base => $_->[0], path => $_->[1], depth => $depth } } @paths;
 }
 
 sub _is_unique {
@@ -320,8 +317,7 @@ my %complex_helpers = (
         Carp::croak("No patterns provided to 'name'") unless @_;
         my @patterns = map { _regexify($_) } @_;
         return sub {
-            my $f    = shift;
-            my $name = basename "$f";
+            my $name = "$_[1]";
             return ( first { $name =~ $_ } @patterns ) ? 1 : 0;
           }
     },
@@ -329,8 +325,7 @@ my %complex_helpers = (
         Carp::croak("No patterns provided to 'iname'") unless @_;
         my @patterns = map { _regexify( $_, "i" ) } @_;
         return sub {
-            my $f    = shift;
-            my $name = basename "$f";
+            my $name = "$_[1]";
             return ( first { $name =~ m{$_}i } @patterns ) ? 1 : 0;
           }
     },
@@ -338,7 +333,7 @@ my %complex_helpers = (
         Carp::croak("No depth argument given to 'min_depth'") unless @_;
         my $min_depth = 0 + shift; # if this warns, do here and not on every file
         return sub {
-            my ( $f, $stash ) = @_;
+            my ( $f, $b, $stash ) = @_;
             return $stash->{_depth} >= $min_depth;
           }
     },
@@ -346,7 +341,7 @@ my %complex_helpers = (
         Carp::croak("No depth argument given to 'max_depth'") unless @_;
         my $max_depth = 0 + shift; # if this warns, do here and not on every file
         return sub {
-            my ( $f, $stash ) = @_;
+            my ( $f, $b, $stash ) = @_;
             return $stash->{_depth} <= $max_depth ? 1 : "0 but true"; # prune
           }
     },
@@ -374,8 +369,7 @@ __PACKAGE__->add_helper(
         Carp::croak("No patterns provided to 'skip_dirs'") unless @_;
         my $name_check = Path::Iterator::Rule->new->name(@_);
         return sub {
-            my $f = shift;
-            return "0 but true" if -d "$f" && $name_check->test($f);
+            return "0 but true" if -d "$_[0]" && $name_check->test(@_);
             return 1; # otherwise, like a null rule
           }
       } => 1 # don't create not_skip_dirs
@@ -849,13 +843,18 @@ version.
 
 Rules are implemented as (usually anonymous) subroutines callbacks that return
 a value indicating whether or not the rule matches.  These callbacks are called
-with two arguments.  The first argument is a path, which is
+with three arguments.  The first argument is a path, which is
 also locally aliased as the C<$_> global variable for convenience in simple
 tests.
 
   $rule->and( sub { -r -w -x $_ } ); # tests $_
 
-The second argument is a hash reference that can be used to maintain state.
+The second argument is the basename of the path, which is useful for certain
+types of name checks:
+
+  $rule->and( sub { $_[1] =~ /foo|bar/ } ); "foo" or "bar" in basename;
+
+The third argument is a hash reference that can be used to maintain state.
 Keys beginning with an underscore are B<reserved> for C<Path::Iterator::Rule>
 to provide additional data about the search in progress.
 For example, the C<_depth> key is used to support minimum and maximum
@@ -879,7 +878,7 @@ a depth of 3:
 
   $rule->and(
     sub {
-      my ($path, $stash) = @_;
+      my ($path, $basename, $stash) = @_;
       return $stash->{_depth} <= 3 ? 1 : "0 but true";
     }
   );
@@ -906,15 +905,14 @@ if the filename is "foo":
   package Path::Iterator::Rule::Foo;
 
   use Path::Iterator::Rule;
-  use File::Basename qw/basename/;
 
   Path::Iterator::Rule->add_helper(
     foo => sub {
       my @args = @_; # do this to customize closure with arguments
       return sub {
-        my ($item) = shift;
+        my ($item, $basename) = shift;
         return if -d "$item";
-        return basename($item) =~ /^foo$/;
+        return $basename =~ /^foo$/;
       }
     }
   );
@@ -939,7 +937,9 @@ The following private implementation methods must be overridden:
 
 =for :list
 * _objectify -- given a path, return an object
-* _chilren -- given a directory, return an (unsorted) list of entries within it, excluding "." and ".."
+* _children -- given a directory, return an (unsorted) list of [ basename, full path ] entries within it, excluding "." and ".."
+
+Note that C<_children> should return a I<list> of I<tuples>, where the tuples are basename and full path.
 
 See L<Path::Class::Rule> source for an example.
 
