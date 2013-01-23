@@ -72,7 +72,6 @@ sub _objectify {
 sub _children {
     my $self = shift;
     my $path = "" . shift; # stringify objects
-    return () unless -d $path;
     opendir( my $dh, $path );
     return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } readdir $dh;
 }
