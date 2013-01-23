@@ -309,23 +309,32 @@ while ( my ( $k, $v ) = each %simple_helpers ) {
     __PACKAGE__->add_helper( $k, sub { return $v } );
 }
 
+sub _generate_name_matcher {
+    my (@patterns) = @_;
+    if ( @patterns > 1 ) {
+        return sub {
+            my $name = "$_[1]";
+            return ( first { $name =~ $_ } @patterns ) ? 1 : 0;
+        }
+    }
+    else {
+        my $pattern = $patterns[0];
+        return sub {
+            my $name = "$_[1]";
+            return $name =~ $pattern ? 1 : 0;
+        }
+    }
+}
+
 # "complex" helpers take arguments
 my %complex_helpers = (
     name => sub {
         Carp::croak("No patterns provided to 'name'") unless @_;
-        my @patterns = map { _regexify($_) } @_;
-        return sub {
-            my $name = "$_[1]";
-            return ( first { $name =~ $_ } @patterns ) ? 1 : 0;
-          }
+        _generate_name_matcher( map { _regexify($_) } @_ );
     },
     iname => sub {
         Carp::croak("No patterns provided to 'iname'") unless @_;
-        my @patterns = map { _regexify( $_, "i" ) } @_;
-        return sub {
-            my $name = "$_[1]";
-            return ( first { $name =~ m{$_}i } @patterns ) ? 1 : 0;
-          }
+        _generate_name_matcher( map { _regexify($_, "i") } @_ );
     },
     min_depth => sub {
         Carp::croak("No depth argument given to 'min_depth'") unless @_;
