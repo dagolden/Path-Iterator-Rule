@@ -28,7 +28,7 @@ use namespace::clean;
 
 sub new {
     my $class = shift;
-    return bless { rules => [ sub () { 1 } ] }, ref $class || $class;
+    return bless { rules => [] }, ref $class || $class;
 }
 
 sub clone {
@@ -94,12 +94,12 @@ sub iter {
         ref( $_[0] )  && !blessed( $_[0] )  ? shift
       : ref( $_[-1] ) && !blessed( $_[-1] ) ? pop
       :                                       {};
-    my $opts = { %defaults, %$args };
+    my $opts      = { %defaults, %$args };
+    my $stash     = {};
+    my $has_rules = @{ $self->{rules} };
     my @queue =
       map { { base => basename("$_"), path => $self->_objectify($_), depth => 0 } }
       @_ ? @_ : '.';
-    my $stash = {};
-    my %seen;
 
     return sub {
         LOOP: {
@@ -113,18 +113,23 @@ sub iter {
             }
             local $_ = $item;
             $stash->{_depth} = $depth;
-            my $interest;
-            if ( $opts->{error_handler} ) {
-                $interest =
-                  try { $self->test( $item, $base, $stash ) }
-                catch { $opts->{error_handler}->( $item, $_ ) };
-            }
-            else {
-                $interest = $self->test( $item, $base, $stash );
-            }
-            my $prune = $interest && !( 0 + $interest ); # capture "0 but true"
-            $interest += 0;                              # then ignore "but true"
 
+            # by default, we're interested in everything and prune nothing
+            my ( $interest, $prune ) = ( 1, 0 );
+            if ($has_rules) {
+                if ( $opts->{error_handler} ) {
+                    $interest =
+                      try { $self->test( $item, $base, $stash ) }
+                    catch { $opts->{error_handler}->( $item, $_ ) };
+                }
+                else {
+                    $interest = $self->test( $item, $base, $stash );
+                }
+                $prune = $interest && !( 0 + $interest ); # capture "0 but true"
+                $interest += 0;                           # then ignore "but true"
+            }
+
+            # if it's a directory, maybe add children to the queue
             if (   -d $string_item
                 && !$prune
                 && ( !$opts->{loop_safe} || $self->_is_unique( $string_item, $stash ) ) )
@@ -216,7 +221,7 @@ sub test {
         $result = $rule->( $item, $base, $stash ) || 0;
         return $result if !( 0 + $result ); # want to shortcut on "0 but true"
     }
-    return $result;
+    return $result // 1;                    # not defined means we had no rules
 }
 
 #--------------------------------------------------------------------------#
