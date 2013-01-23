@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+0.002     2013-01-23 14:38:24 America/New_York
+
     [INCOMPATIBLE CHANGES]
 
     - Test subroutines now get path, basename and stash
