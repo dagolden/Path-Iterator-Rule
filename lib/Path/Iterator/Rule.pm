@@ -647,12 +647,12 @@ The default is slow, but safe.
 
 The C<error_handler> parameter must be a subroutine reference.  It will be
 called when a rule test throws an exception.  The first argument will be
-the L<Path::Class> object being inspected and the second argument will be
+the file name being inspected and the second argument will be
 the exception.
 
 The paths inspected and returned will be relative to the search directories
-provided.  If these are absolute, then the objects returned will have absolute
-paths.  If these are relative, then the objects returned will have relative
+provided.  If these are absolute, then the paths returned will have absolute
+paths.  If these are relative, then the paths returned will have relative
 paths.
 
 =head3 C<iter_fast>
@@ -889,8 +889,7 @@ correct behavior.
   $rule->not_dangling;
 
 The C<dangling> rule method matches dangling symlinks.  Use it or its inverse
-to control how dangling symlinks should be treated.  Note that a dangling
-symlink will be returned by the iterator as a L<Path::Class::File> object.
+to control how dangling symlinks should be treated.
 
 =head3 C<shebang>
 
@@ -915,7 +914,7 @@ version.
 
 =head2 Custom rule subroutines
 
-Rules are implemented as (usually anonymous) subroutines callbacks that return
+Rules are implemented as (usually anonymous) subroutine callbacks that return
 a value indicating whether or not the rule matches.  These callbacks are called
 with three arguments.  The first argument is a path, which is
 also locally aliased as the C<$_> global variable for convenience in simple
@@ -1013,14 +1012,15 @@ The following private implementation methods must be overridden:
 * _objectify -- given a path, return an object
 * _children -- given a directory, return an (unsorted) list of [ basename, full path ] entries within it, excluding "." and ".."
 
-Note that C<_children> should return a I<list> of I<tuples>, where the tuples are basename and full path.
+Note that C<_children> should return a I<list> of I<tuples>, where the tuples
+are array references containing basename and full path.
 
 See L<Path::Class::Rule> source for an example.
 
 =head1 LEXICAL WARNINGS
 
 If you run with lexical warnings enabled, C<Path::Iterator::Rule> will issue
-warnings in certain circumstances (such as a read-only directory that must be
+warnings in certain circumstances (such as an unreadable directory that must be
 skipped).  To disable these categories, put the following statement at the
 correct scope:
 
@@ -1094,6 +1094,11 @@ considerations.  See L<perlport> for details.
 There are many other file finding modules out there.  They all have various
 features/deficiencies, depending on your preferences and needs.  Here is an
 (incomplete) list of alternatives, with some comparison commentary.
+
+L<Path::Class::Rule> and L<IO::All::Rule> are subclasses of
+C<Path::Iterator::Rule> and operate on L<Path::Class> and L<IO::All> objects,
+respectively.  Because of this, they are substantially slower on
+large directory trees than just using this module directly.
 
 L<File::Find> is part of the Perl core.  It requires the user to write a
 callback function to process each node of the search.  Callbacks must use

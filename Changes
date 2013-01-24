@@ -2,6 +2,13 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [DOCUMENTED]
+
+    - Fixed typos that still talked about Path::Class objects
+
+    - Added Path::Class::Rule and IO::All::Rule to the list
+      of alternates
+
 0.007     2013-01-23 22:35:47 America/New_York
 
     [DOCUMENTED]
