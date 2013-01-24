@@ -2,6 +2,11 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [ADDED]
+
+    - Added 'iter_fast' and 'all_fast' methods that switch default options
+      from safe to fast
+
 0.003     2013-01-23 18:32:31 America/New_York
 
     [DOCUMENTED]

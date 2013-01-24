@@ -80,21 +80,38 @@ sub _children {
 # iteration methods
 #--------------------------------------------------------------------------#
 
-my %defaults = (
-    depthfirst      => 0,
-    follow_symlinks => 1,
-    sorted          => 1,
-    loop_safe       => ( $^O eq 'MSWin32' ? 0 : 1 ),       # No inode #'s on Windows
-    error_handler   => sub { die sprintf( "%s: %s", @_ ) },
-);
-
 sub iter {
-    my $self = shift;
+    my $self     = shift;
+    my %defaults = (
+        follow_symlinks => 1,
+        depthfirst      => 0,
+        sorted          => 1,
+        loop_safe       => ( $^O eq 'MSWin32' ? 0 : 1 ),       # No inode #'s on Windows
+        error_handler   => sub { die sprintf( "%s: %s", @_ ) },
+    );
+    $self->_iter( \%defaults, @_ );
+}
+
+sub iter_fast {
+    my $self     = shift;
+    my %defaults = (
+        follow_symlinks => 1,
+        depthfirst      => -1,
+        sorted          => 0,
+        loop_safe       => 0,
+        error_handler   => undef,
+    );
+    $self->_iter( \%defaults, @_ );
+}
+
+sub _iter {
+    my $self     = shift;
+    my $defaults = shift;
     my $args =
         ref( $_[0] )  && !blessed( $_[0] )  ? shift
       : ref( $_[-1] ) && !blessed( $_[-1] ) ? pop
       :                                       {};
-    my %opts = ( %defaults, %$args );
+    my %opts = ( %$defaults, %$args );
 
     # unroll these for efficiency
     my $opt_depthfirst      = $opts{depthfirst};
@@ -175,7 +192,17 @@ sub iter {
 
 sub all {
     my $self = shift;
-    my $iter = $self->iter(@_);
+    return $self->_all( $self->iter(@_) );
+}
+
+sub all_fast {
+    my $self = shift;
+    return $self->_all( $self->iter_fast(@_) );
+}
+
+sub _all {
+    my $self = shift;
+    my $iter = shift;
     my @results;
     while ( my $item = $iter->() ) {
         push @results, $item;
@@ -610,6 +637,12 @@ provided.  If these are absolute, then the objects returned will have absolute
 paths.  If these are relative, then the objects returned will have relative
 paths.
 
+=head3 C<iter_fast>
+
+This works just like C<iter>, except that it optimizes for speed over
+safety. Don't do this unless you're sure you need it and accept
+the consequences.  See L</PERFORMANCE> for details.
+
 =head3 C<all>
 
   my @matches = $rule->all( @dir, \%options );
@@ -617,6 +650,12 @@ paths.
 Returns a list of paths that match the rule.  It takes the same arguments and
 has the same behaviors as the C<iter> method.  The C<all> method uses C<iter>
 internally to fetch all results.
+
+=head3 C<all_fast>
+
+This works just like C<all>, except that it optimizes for speed over
+safety. Don't do this unless you're sure you need it and accept
+the consequences.  See L</PERFORMANCE> for details.
 
 =head3 C<test>
 
@@ -975,21 +1014,27 @@ By default, C<Path::Iterator::Rule> iterator options are "slow but safe".  They
 ensure uniqueness, return files in sorted order, and throw nice error messages
 if something goes wrong.
 
-If you want speed, set these options:
+If you want speed over safety, set these options:
 
-    my %options = (
+    %options = (
         loop_safe => 0,
         sorted => 0,
+        depthfirst => -1,
         error_handler => undef
     );
 
-    my $iter = $rule->iter( @dirs, \%options );
+Alternatively, use the C<iter_fast> and C<fast_all> methods instead, which set
+these options for you.
 
-Depending on the file structure being searched, you might also want to set C<<
-depthfirst => 1 >>. If you have lots of nested directories and all the files at
-the bottom, a depth first search might do less work or use less memory,
-particularly if the search will be halted early (e.g. finding the first N
-matches.)
+    $iter = $rule->iter( @dirs, \%options );
+
+    $iter = $rule->iter_fast( @dirs ); # same thing
+
+Depending on the file structure being searched, C<< depthfirst => -1 >> may or
+may not be a good choice. If you have lots of nested directories and all the
+files at the bottom, a depth first search might do less work or use less
+memory, particularly if the search will be halted early (e.g. finding the first
+N matches.)
 
 Rules will shortcut on failure, so be sure to put rules likely to fail
 early in a rule chain.
