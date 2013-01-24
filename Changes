@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+0.007     2013-01-23 22:35:47 America/New_York
+
     [DOCUMENTED]
 
     - Fixed typo relating to Number::Compare.  "1M" is legal, "1MB" is not
