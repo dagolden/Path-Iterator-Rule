@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+0.006     2013-01-23 21:54:31 America/New_York
+
     [CHANGED]
 
     - Even more internal optimization
