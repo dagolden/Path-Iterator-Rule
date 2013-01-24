@@ -69,12 +69,13 @@ sub _objectify {
     return "$path";
 }
 
-sub _children {
-    my $self = shift;
-    my $path = "" . shift; # stringify objects
-    opendir( my $dh, $path );
-    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } readdir $dh;
-}
+## We inline this below, but a subclass equivalent would be this:
+##sub _children {
+##    my $self = shift;
+##    my $path = "" . shift; # stringify objects
+##    opendir( my $dh, $path );
+##    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } readdir $dh;
+##}
 
 #--------------------------------------------------------------------------#
 # iteration methods
@@ -122,6 +123,9 @@ sub _iter {
     my $has_rules           = @{ $self->{rules} };
     my $stash               = {};
 
+    # if not subclassed, we want to inline
+    my $can_children = $self->can("_children");
+
     # queue structure: flat list in tuples of 3: (object, basename, depth)
     # if object is arrayref, then that's a special case signal that it
     # was already of interest and can finally be returned for postorder searches
@@ -164,11 +168,25 @@ sub _iter {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
                 else {
-                    my @paths = $self->_children($item);
-                    if ($opt_sorted) {
-                        @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
+                    my @next;
+                    my $depth_p1 = $depth + 1;
+                    if ( $can_children ) {
+                        my @paths = $can_children->($self, $item);
+                        if ($opt_sorted) {
+                            @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
+                        }
+                        @next = map { ( $_->[1], $_->[0], $depth_p1 ) } @paths;
                     }
-                    my @next = map { ( $_->[1], $_->[0], $depth + 1 ) } @paths;
+                    else {
+                        opendir( my $dh, $string_item );
+                        if ($opt_sorted) {
+                            @next= map { ("$string_item/$_", $_, $depth_p1) } sort { $a cmp $b } grep { $_ ne "." && $_ ne ".." } readdir $dh;
+                        }
+                        else {
+                            @next= map { ("$string_item/$_", $_, $depth_p1) } grep { $_ ne "." && $_ ne ".." } readdir $dh;
+                        }
+                    }
+
 
                     if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
