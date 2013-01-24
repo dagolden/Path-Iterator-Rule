@@ -71,7 +71,7 @@
    "provides" : {
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "0.004"
+         "version" : "0.005"
       }
    },
    "release_status" : "stable",
@@ -86,6 +86,6 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "0.004"
+   "version" : "0.005"
 }
 
