@@ -6,6 +6,8 @@ Revision history for Path-Iterator-Rule
 
     - Fixed typos that still talked about Path::Class objects
 
+    - Fixed documentation of test()
+
     - Added Path::Class::Rule and IO::All::Rule to the list
       of alternates
 

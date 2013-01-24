@@ -677,7 +677,7 @@ the consequences.  See L</PERFORMANCE> for details.
 
 =head3 C<test>
 
-  if ( $rule->test( $path ) ) { ... }
+  if ( $rule->test( $path, $basename, $stash ) ) { ... }
 
 Test a file path against a rule.  Used internally, but provided should
 someone want to create their own, custom iteration algorithm.
