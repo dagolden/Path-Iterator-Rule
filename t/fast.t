@@ -17,45 +17,28 @@ use Path::Iterator::Rule;
 {
   my @tree = qw(
     aaaa.txt
-    bbbb.txt
-    cccc/dddd.txt
-    cccc/eeee/ffff.txt
     gggg.txt
-  );
-
-  my @breadth = qw(
-    .
-    aaaa.txt
+    cccc.txt
+    dddd.txt
     bbbb.txt
-    cccc
-    gggg.txt
-    cccc/dddd.txt
-    cccc/eeee
-    cccc/eeee/ffff.txt
-  );
-  
-  my @depth_pre = qw(
-    .
-    aaaa.txt
-    bbbb.txt
-    cccc
-    cccc/dddd.txt
-    cccc/eeee
-    cccc/eeee/ffff.txt
-    gggg.txt
+    eeee.txt
   );
 
   my $td = make_tree(@tree);
 
+  opendir( my $dh, "$td" );
+  my @expected = ( grep { $_ ne "." && $_ ne ".." } readdir $dh );
+  closedir $dh;
+
   my ($iter, @files);
-  my $rule = Path::Iterator::Rule->new;
+  my $rule = Path::Iterator::Rule->new->file;
 
   @files = map  { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, \@breadth, "all() defaults to breadth-first")
+  cmp_deeply( \@files, [ sort @expected ], "all() gives sorted order")
     or diag explain \@files;
 
   @files = map  { unixify($_, $td) } $rule->all_fast($td);
-  cmp_deeply( \@files, \@depth_pre, "all_fast() defaults to depth first iteration (pre)")
+  cmp_deeply( \@files, \@expected, "all_fast() gives disk order")
     or diag explain \@files;
 
 }
