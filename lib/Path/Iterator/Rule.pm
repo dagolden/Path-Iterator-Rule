@@ -606,7 +606,7 @@ case it still returns a new object that matches any file or directory.
 =head3 C<clone>
 
   my $common      = Path::Iterator::Rule->new->file->not_empty;
-  my $big_files   = $common->clone->size(">1MB");
+  my $big_files   = $common->clone->size(">1M");
   my $small_files = $common->clone->size("<10K");
 
 Creates a copy of a rule object.  Useful for customizing different
