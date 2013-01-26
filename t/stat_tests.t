@@ -2,6 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 use Test::More 0.92;
+use Test::Filename;
 use Path::Class;
 use File::Temp;
 use File::pushd qw/pushd/;
@@ -39,7 +40,7 @@ sub copy {
   $rule = Path::Iterator::Rule->new->file->size(">0k");
   @files = ();
   @files = $rule->all($td);
-  is( $files[0], $changes, "size > 0") or diag explain \@files;
+  filename_is( $files[0], $changes, "size > 0") or diag explain \@files;
 
 }
 

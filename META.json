@@ -63,6 +63,7 @@
             "File::pushd" : "0",
             "Path::Class" : "0",
             "Test::Deep" : "0",
+            "Test::Filename" : "0",
             "Test::More" : "0.92",
             "autodie" : "0"
          }
@@ -71,7 +72,7 @@
    "provides" : {
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "0.008"
+         "version" : "0.009"
       }
    },
    "release_status" : "stable",
@@ -86,6 +87,6 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "0.008"
+   "version" : "0.009"
 }
 

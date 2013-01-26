@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [FIXED]
+
+    - Fixed tests on Windows
+
 0.008     2013-01-24 09:05:01 America/New_York
 
     [DOCUMENTED]
