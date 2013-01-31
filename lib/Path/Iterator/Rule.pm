@@ -672,6 +672,7 @@ the exception.
 The optional C<visitor> parameter must be a subroutine reference.  If set,
 it will be called for any result that matches.  It is called the same way
 a custom rule would be (see L</EXTENDING>) but its return value is ignored.
+It is called when an item is first inspected -- "postorder" is not respected.
 
 The paths inspected and returned will be relative to the search directories
 provided.  If these are absolute, then the paths returned will have absolute
@@ -691,6 +692,11 @@ the consequences.  See L</PERFORMANCE> for details.
 Returns a list of paths that match the rule.  It takes the same arguments and
 has the same behaviors as the C<iter> method.  The C<all> method uses C<iter>
 internally to fetch all results.
+
+In void context, it is optimized to iterate over everything, but not store
+results.  This is most useful with the C<visitor> option:
+
+    $rule->all( $path, { visitor => \&callback } );
 
 =head3 C<all_fast>
 
