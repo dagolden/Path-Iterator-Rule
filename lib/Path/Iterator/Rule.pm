@@ -180,8 +180,8 @@ sub _iter {
                 else {
                     my @next;
                     my $depth_p1 = $depth + 1;
-                    if ( $can_children ) {
-                        my @paths = $can_children->($self, $item);
+                    if ($can_children) {
+                        my @paths = $can_children->( $self, $item );
                         if ($opt_sorted) {
                             @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
                         }
@@ -190,13 +190,16 @@ sub _iter {
                     else {
                         opendir( my $dh, $string_item );
                         if ($opt_sorted) {
-                            @next= map { ("$string_item/$_", $_, $depth_p1) } sort { $a cmp $b } grep { $_ ne "." && $_ ne ".." } readdir $dh;
+                            @next =
+                              map { ( "$string_item/$_", $_, $depth_p1 ) }
+                              sort { $a cmp $b } grep { $_ ne "." && $_ ne ".." } readdir $dh;
                         }
                         else {
-                            @next= map { ("$string_item/$_", $_, $depth_p1) } grep { $_ ne "." && $_ ne ".." } readdir $dh;
+                            @next =
+                              map { ( "$string_item/$_", $_, $depth_p1 ) }
+                              grep { $_ ne "." && $_ ne ".." } readdir $dh;
                         }
                     }
-
 
                     if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
@@ -231,11 +234,16 @@ sub all_fast {
 sub _all {
     my $self = shift;
     my $iter = shift;
-    my @results;
-    while ( my $item = $iter->() ) {
-        push @results, $item;
+    if ( defined wantarray ) {
+        my @results;
+        while ( my $item = $iter->() ) {
+            push @results, $item;
+        }
+        return @results;
     }
-    return @results;
+    else {
+        1 while $iter->();
+    }
 }
 
 #--------------------------------------------------------------------------#
