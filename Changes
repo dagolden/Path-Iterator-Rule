@@ -11,6 +11,10 @@ Revision history for Path-Iterator-Rule
 
     - Calling all() in void context will iterate but not store results
 
+    [FIXED]
+
+    - Another attempt at fixing tests on Windows. Damn those backslashes!
+
 0.009     2013-01-25 21:52:41 America/New_York
 
     [FIXED]
