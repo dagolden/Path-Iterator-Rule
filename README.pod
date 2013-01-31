@@ -6,7 +6,7 @@ Path::Iterator::Rule - Iterative, recursive file finder
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
@@ -134,6 +134,10 @@ C<loop_safe> -- Prevents visiting the same directory more than once when true.  
 
 C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
 
+=item *
+
+C<visitor> -- An optional coderef that will be called on items matching all rules.
+
 =back
 
 Filesystem loops might exist from either hard or soft links.  The C<loop_safe>
@@ -149,6 +153,10 @@ The C<error_handler> parameter must be a subroutine reference.  It will be
 called when a rule test throws an exception.  The first argument will be
 the file name being inspected and the second argument will be
 the exception.
+
+The optional C<visitor> parameter must be a subroutine reference.  If set,
+it will be called for any result that matches.  It is called the same way
+a custom rule would be (see L</EXTENDING>) but its return value is ignored.
 
 The paths inspected and returned will be relative to the search directories
 provided.  If these are absolute, then the paths returned will have absolute

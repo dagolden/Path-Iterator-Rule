@@ -89,6 +89,7 @@ sub iter {
         sorted          => 1,
         loop_safe       => ( $^O eq 'MSWin32' ? 0 : 1 ),       # No inode #'s on Windows
         error_handler   => sub { die sprintf( "%s: %s", @_ ) },
+        visitor         => undef,
     );
     $self->_iter( \%defaults, @_ );
 }
@@ -101,6 +102,7 @@ sub iter_fast {
         sorted          => 0,
         loop_safe       => 0,
         error_handler   => undef,
+        visitor         => undef,
     );
     $self->_iter( \%defaults, @_ );
 }
@@ -120,6 +122,7 @@ sub _iter {
     my $opt_sorted          = $opts{sorted};
     my $opt_loop_safe       = $opts{loop_safe};
     my $opt_error_handler   = $opts{error_handler};
+    my $opt_visitor         = $opts{visitor};
     my $has_rules           = @{ $self->{rules} };
     my $stash               = {};
 
@@ -157,6 +160,13 @@ sub _iter {
                 }
                 $prune = $interest && !( 0 + $interest ); # capture "0 but true"
                 $interest += 0;                           # then ignore "but true"
+            }
+
+            # if we have a visitor, we call it like a custom rule
+            if ( $opt_visitor && $interest ) {
+                local $_ = $item;
+                $stash->{_depth} = $depth;
+                $opt_visitor->( $item, $base, $stash );
             }
 
             # if it's a directory, maybe add children to the queue
@@ -635,6 +645,7 @@ current directory is used (C<".">).  Valid options include:
 * C<follow_symlinks> -- Follow directory symlinks when true. Default is 1.
 * C<loop_safe> -- Prevents visiting the same directory more than once when true.  Default is 1.
 * C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
+* C<visitor> -- An optional coderef that will be called on items matching all rules.
 
 Filesystem loops might exist from either hard or soft links.  The C<loop_safe>
 option prevents infinite loops, but adds some overhead by making C<stat> calls.
@@ -649,6 +660,10 @@ The C<error_handler> parameter must be a subroutine reference.  It will be
 called when a rule test throws an exception.  The first argument will be
 the file name being inspected and the second argument will be
 the exception.
+
+The optional C<visitor> parameter must be a subroutine reference.  If set,
+it will be called for any result that matches.  It is called the same way
+a custom rule would be (see L</EXTENDING>) but its return value is ignored.
 
 The paths inspected and returned will be relative to the search directories
 provided.  If these are absolute, then the paths returned will have absolute
