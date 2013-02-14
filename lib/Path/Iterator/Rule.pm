@@ -609,6 +609,9 @@ Here is a summary of features for comparison to other file finding modules:
 * doesn't chdir during operation
 * provides an API for extensions
 
+As a convenience, the L<PIR> module is an empty subclass of this one
+that is less arduous to type for one-liners.
+
 =head1 USAGE
 
 =head2 Constructors

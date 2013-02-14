@@ -2,6 +2,11 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [ADDED]
+
+    - Includes PIR.pm as an empty subclass of Path::Iterator::Rule
+      for less typing for one-liners
+
 0.011     2013-02-06 16:24:16 America/New_York
 
     [FIXED]

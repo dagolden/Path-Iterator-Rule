@@ -58,7 +58,9 @@
          "requires" : {
             "Config" : "0",
             "Exporter" : "0",
+            "ExtUtils::MakeMaker" : "0",
             "File::Find" : "0",
+            "File::Spec::Functions" : "0",
             "File::Temp" : "0",
             "File::pushd" : "0",
             "Path::Class" : "0",
@@ -71,9 +73,13 @@
       }
    },
    "provides" : {
+      "PIR" : {
+         "file" : "lib/PIR.pm",
+         "version" : "0.012"
+      },
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "0.011"
+         "version" : "0.012"
       }
    },
    "release_status" : "stable",
@@ -88,6 +94,6 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "0.011"
+   "version" : "0.012"
 }
 
