@@ -79,8 +79,13 @@ sub _objectify {
 ##    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } readdir $dh;
 ##}
 
+# The _stringify option controls whether the string form of an object is cached
+# for iteration control.  This is generally a good idea to avoid extra overhead,
+# but subclasses can override this if necessary
+
 sub _defaults {
     return (
+        _stringify       => 1,
         follow_symlinks => 1,
         depthfirst      => 0,
         sorted          => 1,
@@ -92,6 +97,7 @@ sub _defaults {
 
 sub _fast_defaults {
     return (
+        _stringify       => 1,
         follow_symlinks => 1,
         depthfirst      => -1,
         sorted          => 0,
@@ -125,6 +131,7 @@ sub _iter {
     my %opts = ( %$defaults, %$args );
 
     # unroll these for efficiency
+    my $opt_stringify      = $opts{_stringify};
     my $opt_depthfirst      = $opts{depthfirst};
     my $opt_follow_symlinks = $opts{follow_symlinks};
     my $opt_sorted          = $opts{sorted};
@@ -149,7 +156,7 @@ sub _iter {
             my ( $item, $base, $depth, $origin ) = splice( @queue, 0, 4 );
             return unless $item;
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
-            my $string_item = "$item";
+            my $string_item = $opt_stringify ? "$item" : $item;
             if ( !$opt_follow_symlinks ) {
                 redo LOOP if -l $string_item;
             }
