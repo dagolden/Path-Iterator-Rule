@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [CHANGED]
+
+    - Refactored some internals to allow more flexible subclassing
+
 0.013     2013-02-15 10:51:59 America/New_York
 
     [ADDED]
