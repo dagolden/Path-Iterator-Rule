@@ -390,8 +390,8 @@ sub _reflag {
 
 # "simple" helpers take no arguments
 my %simple_helpers = (
-    directory => sub { -d "$_" },             # see also -d => dir below
-    dangling => sub { -l "$_" && !stat "$_" },
+    directory => sub { -d $_ },             # see also -d => dir below
+    dangling => sub { -l $_ && !stat $_ },
 );
 
 while ( my ( $k, $v ) = each %simple_helpers ) {
@@ -446,8 +446,8 @@ my %complex_helpers = (
         my @patterns = map { _regexify($_) } @_;
         return sub {
             my $f = shift;
-            return unless !-d "$f";
-            open my $fh, "<", "$f";
+            return unless !-d $f;
+            open my $fh, "<", $f;
             my $shebang = <$fh>;
             return unless defined $shebang;
             return ( first { $shebang =~ $_ } @patterns ) ? 1 : 0;
@@ -465,7 +465,7 @@ __PACKAGE__->add_helper(
         Carp::croak("No patterns provided to 'skip_dirs'") unless @_;
         my $name_check = Path::Iterator::Rule->new->name(@_);
         return sub {
-            return "0 but true" if -d "$_[0]" && $name_check->test(@_);
+            return "0 but true" if -d $_[0] && $name_check->test(@_);
             return 1; # otherwise, like a null rule
           }
       } => 1 # don't create not_skip_dirs
@@ -520,7 +520,7 @@ for my $i ( 0 .. $#stat_tests ) {
     my $coderef = sub {
         Carp::croak("The '$name' test requires a single argument") unless @_ == 1;
         my $comparator = Number::Compare->new(shift);
-        return sub { return $comparator->( ( stat("$_") )[$i] ) };
+        return sub { return $comparator->( ( stat($_) )[$i] ) };
     };
     __PACKAGE__->add_helper( $name, $coderef );
 }
