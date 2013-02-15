@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use autodie;
 use Test::More 0.92;
-use Path::Class;
 use File::Temp;
 use Test::Deep qw/cmp_deeply/;
 
@@ -35,7 +34,7 @@ my $td = make_tree(@tree);
   is( $@, '', "error handler catches fatalitis" );
   is( scalar @msg, 3, "saw correct number of errors" );
   my ($file, $text) = @{$msg[0]};
-  is( $file, file($td), "object has file path of error");
+  is( $file, $td, "object has file path of error");
   like( $text, qr/^Evil here/, "handler gets message" );
 }
 

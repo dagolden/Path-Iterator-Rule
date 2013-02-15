@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use autodie;
 use Test::More 0.92;
-use Path::Class;
+use Path::Tiny;
 use File::Temp;
 use Test::Deep qw/cmp_deeply/;
 use File::pushd qw/pushd/;
@@ -56,8 +56,8 @@ plan skip_all => "No symlink support"
 
   my $td = make_tree(@tree);
 
-  symlink dir($td,'cccc','eeee'), dir($td,'pppp');
-  symlink file($td,'aaaa.txt'), file($td,'qqqq.txt');
+  symlink path($td,'cccc','eeee'), path($td,'pppp');
+  symlink path($td,'aaaa.txt'), path($td,'qqqq.txt');
 
   my ($iter, @files);
   my $rule = Path::Iterator::Rule->new;
@@ -81,8 +81,8 @@ plan skip_all => "No symlink support"
 
   my $td = make_tree(@tree);
 
-  symlink dir($td,'zzzz'), dir($td,'pppp'); # dangling symlink
-  symlink dir($td,'cccc', 'dddd.txt'), dir($td,'qqqq.txt'); # regular symlink
+  symlink path($td,'zzzz'), path($td,'pppp'); # dangling symlink
+  symlink path($td,'cccc', 'dddd.txt'), path($td,'qqqq.txt'); # regular symlink
 
   my @dangling = qw(
     pppp
@@ -129,7 +129,7 @@ plan skip_all => "No symlink support"
 
   my $td = make_tree(@tree);
 
-  symlink dir($td,'cccc'), dir($td,'cccc','eeee'); # symlink loop
+  symlink path($td,'cccc'), path($td,'cccc','eeee'); # symlink loop
 
   my @expected = qw(
     .

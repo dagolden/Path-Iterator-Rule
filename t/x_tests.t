@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 use Test::More 0.92;
-use Path::Class;
+use Path::Tiny;
 use File::Temp;
 use File::pushd qw/pushd/;
 
@@ -20,7 +20,7 @@ use Path::Iterator::Rule;
     data/file1.txt
   ));
 
-  my $file = file($td, 'data', 'file1.txt');
+  my $file = path($td, 'data', 'file1.txt');
   
   # chmod a-rwx
   chmod 0777, $file;

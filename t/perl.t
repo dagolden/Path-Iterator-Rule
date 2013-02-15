@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use autodie;
 use Test::More 0.92;
-use Path::Class;
+use Path::Tiny;
 use File::Temp;
 use Test::Deep qw/cmp_deeply/;
 
@@ -28,7 +28,7 @@ my @bin = qw(
 
 my $td = make_tree(@tree, @bin);
 
-for my $f ( map { file($td, $_) } @bin ) {
+for my $f ( map { path($td, $_) } @bin ) {
   next if $f =~ /foo\.pl/;
   my $fh = $f->openw;
   print {$fh} ( $f =~ 'bin/bar' ? "#!/usr/bin/env perl\n" : "#!/usr/bin/perl\n");

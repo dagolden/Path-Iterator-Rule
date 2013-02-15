@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package PCNTest;
-use Path::Class;
+use Path::Tiny;
 use File::Temp;
 
 use Exporter;
@@ -11,11 +11,11 @@ our @EXPORT = qw/make_tree unixify/;
 sub make_tree {
   my $td = File::Temp->newdir;
   for ( @_ ) {
-    my $item = /\/$/ ? dir($td, $_) : file($td, $_);
-    if ( $item->is_dir ) {
-      $item->mkpath;
+    if ( /\/$/ ) {
+        path($td, $_)->mkpath;
     }
     else {
+      my $item = path($td, $_);
       $item->parent->mkpath;
       $item->touch;
     }
@@ -25,8 +25,8 @@ sub make_tree {
 
 sub unixify {
     my ($arg, $td) = @_;
-    my $pc = -d "$arg" ? dir($arg) : file($arg);
-    return $pc->relative($td)->as_foreign("Unix")->stringify;
+    my $pc = path($arg);
+    return $pc->relative($td)->stringify;
 }
 
 1;

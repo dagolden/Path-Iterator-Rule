@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use autodie;
 use Test::More 0.92;
-use Path::Class;
 use File::Temp;
 use Test::Deep qw/cmp_deeply/;
 use File::pushd qw/pushd/;

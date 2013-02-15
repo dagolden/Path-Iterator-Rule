@@ -2,7 +2,6 @@ use 5.006;
 use strict;
 use warnings;
 use Test::More 0.92;
-use Path::Class;
 use File::Temp;
 use File::pushd qw/pushd/;
 
