@@ -657,7 +657,7 @@ current directory is used (C<".">).  Valid options include:
 * C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error. If set to undef, error handling is disabled.
 * C<follow_symlinks> -- Follow directory symlinks when true. Default is 1.
 * C<loop_safe> -- Prevents visiting the same directory more than once when true.  Default is 1.
-* C<relative> -- Return matching items relative to the origin directory. Default is 0.
+* C<relative> -- Return matching items relative to the search directory. Default is 0.
 * C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
 * C<visitor> -- An optional coderef that will be called on items matching all rules.
 
@@ -684,6 +684,13 @@ The paths inspected and returned will be relative to the search directories
 provided.  If these are absolute, then the paths returned will have absolute
 paths.  If these are relative, then the paths returned will have relative
 paths.
+
+If the search directories are absolute and the C<relative> option is true,
+files returned will be relative to the search directory.  Note that if the
+search directories are not mutually exclusive (whether containing
+subdirectories like C<@INC> or symbolic links), files found could be returned
+relative to different initial search directories based on C<depthfirst>,
+C<follow_symlinks> or C<loop_safe>.
 
 =head3 C<iter_fast>
 

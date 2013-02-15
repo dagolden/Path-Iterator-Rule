@@ -6,7 +6,7 @@ Path::Iterator::Rule - Iterative, recursive file finder
 
 =head1 VERSION
 
-version 0.012
+version 0.013
 
 =head1 SYNOPSIS
 
@@ -135,6 +135,10 @@ C<loop_safe> -- Prevents visiting the same directory more than once when true.  
 
 =item *
 
+C<relative> -- Return matching items relative to the search directory. Default is 0.
+
+=item *
+
 C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
 
 =item *
@@ -166,6 +170,13 @@ The paths inspected and returned will be relative to the search directories
 provided.  If these are absolute, then the paths returned will have absolute
 paths.  If these are relative, then the paths returned will have relative
 paths.
+
+If the search directories are absolute and the C<relative> option is true,
+files returned will be relative to the search directory.  Note that if the
+search directories are not mutually exclusive (whether containing
+subdirectories like C<@INC> or symbolic links), files found could be returned
+relative to different initial search directories based on C<depthfirst>,
+C<follow_symlinks> or C<loop_safe>.
 
 =head3 C<iter_fast>
 
