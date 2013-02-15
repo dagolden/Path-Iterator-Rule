@@ -63,6 +63,7 @@ sub add_helper {
 #--------------------------------------------------------------------------#
 # Implementation-specific method; these may be overridden by subclasses
 # to test/return results of file wrappers like Path::Class or IO::All
+# or to provide custom error handler, visitors or other features
 #--------------------------------------------------------------------------#
 
 sub _objectify {
@@ -78,13 +79,8 @@ sub _objectify {
 ##    return map { [ $_, "$path/$_" ] } grep { $_ ne "." && $_ ne ".." } readdir $dh;
 ##}
 
-#--------------------------------------------------------------------------#
-# iteration methods
-#--------------------------------------------------------------------------#
-
-sub iter {
-    my $self     = shift;
-    my %defaults = (
+sub _defaults {
+    return (
         follow_symlinks => 1,
         depthfirst      => 0,
         sorted          => 1,
@@ -92,12 +88,10 @@ sub iter {
         error_handler   => sub { die sprintf( "%s: %s", @_ ) },
         visitor         => undef,
     );
-    $self->_iter( \%defaults, @_ );
 }
 
-sub iter_fast {
-    my $self     = shift;
-    my %defaults = (
+sub _fast_defaults {
+    return (
         follow_symlinks => 1,
         depthfirst      => -1,
         sorted          => 0,
@@ -105,7 +99,20 @@ sub iter_fast {
         error_handler   => undef,
         visitor         => undef,
     );
-    $self->_iter( \%defaults, @_ );
+}
+
+#--------------------------------------------------------------------------#
+# iteration methods
+#--------------------------------------------------------------------------#
+
+sub iter {
+    my $self     = shift;
+    $self->_iter( { $self->_defaults }, @_ );
+}
+
+sub iter_fast {
+    my $self     = shift;
+    $self->_iter( { $self->_fast_defaults }, @_ );
 }
 
 sub _iter {
