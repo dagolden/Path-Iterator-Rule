@@ -75,11 +75,11 @@
    "provides" : {
       "PIR" : {
          "file" : "lib/PIR.pm",
-         "version" : "0.013"
+         "version" : "0.014"
       },
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "0.013"
+         "version" : "0.014"
       }
    },
    "release_status" : "stable",
@@ -94,6 +94,6 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "0.013"
+   "version" : "0.014"
 }
 
