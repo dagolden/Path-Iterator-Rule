@@ -291,7 +291,8 @@ case-insensitively.
 The C<skip_dirs> method skips directories that match one or more patterns.
 Patterns may be regular expressions or globs (just like C<name>).  Directories
 that match will not be returned from the iterator and will be excluded from
-further search.
+further search.  B<This includes the starting directories.>  If that isn't
+what you want, see L</skip_subdirs> instead.
 
 B<Note:> this rule should be specified early so that it has a chance to
 operate before a logical shortcut.  E.g.
@@ -301,6 +302,14 @@ operate before a logical shortcut.  E.g.
 
 In the latter case, when a ".git" directory is seen, the C<file> rule
 shortcuts the rule before the C<skip_dirs> rule has a chance to act.
+
+=head3 C<skip_subdirs>
+
+  $rule->skip_subdirs( @patterns );
+
+This works just like C<skip_dirs>, except that the starting directories
+(depth 0) are not skipped and may be returned from the iterator
+unless excluded by other rules.
 
 =head2 File test rules
 

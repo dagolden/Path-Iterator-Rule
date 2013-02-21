@@ -14,6 +14,7 @@ use Path::Iterator::Rule;
 
 {
   my $td = make_tree(qw(
+    atroot.txt
     empty/
     data/file1.txt
   ));
@@ -28,13 +29,13 @@ use Path::Iterator::Rule;
     push @files, $f;
   }
 
-  is( scalar @files, 1, "Iterator: one file") or diag explain \@files;
+  is( scalar @files, 2, "Iterator: two files") or diag explain \@files;
   is( ref $files[0], '', "Iterator: returns string, not object" );
 
   @files = ();
   @files = $rule->all($td);
 
-  is( scalar @files, 1, "All: one file") or diag explain \@files;
+  is( scalar @files, 2, "All: two files") or diag explain \@files;
 
   $rule = Path::Iterator::Rule->new->dir;
   @files = ();
@@ -52,6 +53,16 @@ use Path::Iterator::Rule;
   @files = ();
   @files = map { "$_" } $rule->all();
   is( scalar @files, 2, "All w/ prune: 2 directories") or diag explain \@files;
+
+  $rule = Path::Iterator::Rule->new->skip_dirs(qr/./)->file;
+  @files = ();
+  @files = map { "$_" } $rule->all();
+  is( scalar @files, 0, "All w/ prune everything: nothing") or diag explain \@files;
+
+  $rule = Path::Iterator::Rule->new->skip_subdirs(qr/./)->file;
+  @files = ();
+  @files = map { "$_" } $rule->all();
+  is( scalar @files, 1, "All w/ prune subdirs: 1 file") or diag explain \@files;
 }
 
 done_testing;

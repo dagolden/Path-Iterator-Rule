@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [ADDED]
+
+    - Added 'skip_subdirs' method (Issue #7)
+
     [DOCUMENTED]
 
     - Clarified max/min depth rules

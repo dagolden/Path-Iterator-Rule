@@ -471,6 +471,18 @@ __PACKAGE__->add_helper(
       } => 1 # don't create not_skip_dirs
 );
 
+__PACKAGE__->add_helper(
+    skip_subdirs => sub {
+        Carp::croak("No patterns provided to 'skip_subdirs'") unless @_;
+        my $name_check = Path::Iterator::Rule->new->name(@_);
+        return sub {
+            my ( $f, $b, $stash ) = @_;
+            return "0 but true" if -d $_[0] && $stash->{_depth} && $name_check->test(@_);
+            return 1; # otherwise, like a null rule
+          }
+      } => 1 # don't create not_skip_dirs
+);
+
 # X_tests adapted from File::Find::Rule
 #<<< do not perltidy this
 my %X_tests = (
