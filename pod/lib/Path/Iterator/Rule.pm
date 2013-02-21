@@ -271,9 +271,10 @@ For example:
   $rule->min_depth(3);
   $rule->max_depth(5);
 
-The C<min_depth> and C<max_depth> rule methods take a single argument
-and limit the paths returned to a minimum or maximum depth (respectively)
-from the starting search directory.
+The C<min_depth> and C<max_depth> rule methods take a single argument and limit
+the paths returned to a minimum or maximum depth (respectively) from the
+starting search directory.  A depth of 0 means the starting directory itself.
+A depth of 1 means its children.  (This is similar to the Unix C<find> utility.)
 
 =head2 Perl file rules
 

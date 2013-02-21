@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [DOCUMENTED]
+
+    - Clarified max/min depth rules
+
 0.014     2013-02-16 09:57:39 America/New_York
 
     [CHANGED]
