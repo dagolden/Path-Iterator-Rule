@@ -457,7 +457,9 @@ my %complex_helpers = (
         my $max_depth = 0 + shift; # if this warns, do here and not on every file
         return sub {
             my ( $f, $b, $stash ) = @_;
-            return $stash->{_depth} <= $max_depth ? 1 : "0 but true"; # prune
+            return 1 if $stash->{_depth} < $max_depth;
+            return \1 if $stash->{_depth} == $max_depth;
+            return \0;
           }
     },
     shebang => sub {
