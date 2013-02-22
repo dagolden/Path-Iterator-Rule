@@ -174,8 +174,17 @@ sub _iter {
                 else {
                     $interest = $self->test( $item, $base, $stash );
                 }
-                $prune = $interest && !( 0 + $interest ); # capture "0 but true"
-                $interest += 0;                           # then ignore "but true"
+                # New way to signal prune is returning a reference to a scalar.
+                # Value of the scalar indicates if it should be returned by the
+                # iterator or not; old method is kept for backward compatibility
+                if ( ref $interest eq 'SCALAR' ) {
+                    $prune = 1;
+                    $interest = $$interest;
+                }
+                else {
+                    $prune = $interest && !( 0 + $interest ); # capture "0 but true"
+                    $interest += 0;                           # then ignore "but true"
+                }
             }
 
             # if we have a visitor, we call it like a custom rule
@@ -276,12 +285,17 @@ sub or {
     my $self    = shift;
     my @rules   = $self->_rulify( "or", @_ );
     my $coderef = sub {
-        my $result;
+        my ($result, $prune);
         for my $rule (@rules) {
-            $result = $rule->(@_) || 0;
-            return $result if $result; # want to shortcut on "0 but true"
+            $result = $rule->(@_);
+            # once any rule says to prune, we remember that
+            $prune = (ref($prune) eq 'SCALAR') || (ref($result) eq 'SCALAR');
+            # extract whether contraint was met
+            $result = $$result if ref($result) eq 'SCALAR';
+            # shortcut if met, propagating prune state
+            return( $prune ? \1 : 1 ) if $result;
         }
-        return $result;
+        return( $prune ? \$result : $result ); # may or may not be met, but propagate prune state
     };
     return $self->and($coderef);
 }
@@ -292,31 +306,36 @@ sub not {
     my $obj     = $self->new->and(@rules);
     my $coderef = sub {
         my $result = $obj->test(@_);
-        # XXX what to do about "0 but true"? Ignore it?
-        return $result ? "0" : "1";
+        return ref($result) ? \!$$result : !$result; # invert, but preserve prune
     };
     return $self->and($coderef);
 }
 
 sub skip {
     my $self    = shift;
-    my @rules   = $self->_rulify( "not", @_ );
+    my @rules = @_;
     my $obj     = $self->new->or(@rules);
     my $coderef = sub {
         my $result = $obj->test(@_);
-        return $result ? "0 but true" : "1";
+        $result = $$result if ref($result) eq 'SCALAR';
+        return $result ? \0 : \1; # invert result and flag for pruning
     };
     return $self->and($coderef);
 }
 
 sub test {
     my ( $self, $item, $base, $stash ) = @_;
-    my $result;
+    my ($result, $prune);
     for my $rule ( @{ $self->{rules} } ) {
         $result = $rule->( $item, $base, $stash ) || 0;
-        return $result if !( 0 + $result ); # want to shortcut on "0 but true"
+        # once any rule says to prune, we remember that
+        $prune = (ref($prune) eq 'SCALAR') || (ref($result) eq 'SCALAR');
+        # extract whether contraint was met
+        $result = $$result if ref($result) eq 'SCALAR';
+        # shortcut if not met, propagating prune state
+        return( $prune ? \0 : 0 ) if ! $result;
     }
-    return $result // 1;                    # not defined means we had no rules
+    return( $prune ? \1 : 1 ); # all constaints met, but propagate prune state
 }
 
 #--------------------------------------------------------------------------#
