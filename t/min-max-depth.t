@@ -39,7 +39,7 @@ my $td = make_tree(@tree);
 
 {
   my @files;
-  my $rule = Path::Iterator::Rule->new->file->max_depth(2);
+  my $rule = Path::Iterator::Rule->new->max_depth(2)->file;
   my $expected = [ qw(
     aaaa.txt
     bbbb.txt
