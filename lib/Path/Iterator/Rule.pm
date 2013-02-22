@@ -486,7 +486,7 @@ __PACKAGE__->add_helper(
         Carp::croak("No patterns provided to 'skip_dirs'") unless @_;
         my $name_check = Path::Iterator::Rule->new->name(@_);
         return sub {
-            return "0 but true" if -d $_[0] && $name_check->test(@_);
+            return \0 if -d $_[0] && $name_check->test(@_);
             return 1; # otherwise, like a null rule
           }
       } => 1 # don't create not_skip_dirs
@@ -498,7 +498,7 @@ __PACKAGE__->add_helper(
         my $name_check = Path::Iterator::Rule->new->name(@_);
         return sub {
             my ( $f, $b, $stash ) = @_;
-            return "0 but true" if -d $_[0] && $stash->{_depth} && $name_check->test(@_);
+            return \0 if -d $f && $stash->{_depth} && $name_check->test(@_);
             return 1; # otherwise, like a null rule
           }
       } => 1 # don't create not_skip_dirs
