@@ -369,18 +369,15 @@ to provide additional data about the search in progress.
 For example, the C<_depth> key is used to support minimum and maximum
 depth checks.
 
-The custom rule subroutine must return one of three values:
+The custom rule subroutine must return one of four values:
 
 =for :list
 * A true value -- indicates the constraint is satisfied
 * A false value -- indicates the constraint is not satisfied
-* "0 but true" -- a special return value that signals that a directory should not be searched recursively
+* C<\1> -- indicate the constraint is satified, and prune if it's a directory
+* C<\0> -- indicate the constrint is not satisfied, and prune if it's a directory
 
-The C<0 but true> value will shortcut logic (it is treated as "true" for an
-"or" rule and "false" for an "and" rule).  For a directory, it ensures that the
-directory will not be returned from the iterator and that its children will not
-be evaluated either.  It has no effect on files -- it is equivalent to
-returning a false value.
+The legacy "0 but true" is no longer valid.
 
 For example, this is equivalent to the "max_depth" rule method with
 a depth of 3:
@@ -388,15 +385,19 @@ a depth of 3:
   $rule->and(
     sub {
       my ($path, $basename, $stash) = @_;
-      return $stash->{_depth} <= 3 ? 1 : "0 but true";
+      return 1 if $stash->{_depth} < 3;
+      return \1 if $stash->{_depth} == 3;
+      return \0; # should never get here
     }
   );
 
-Files of depth 4 will not be returned by the iterator; directories of depth
-4 will not be returned and will not be searched.
+Files and directories and directories up to depth 3 will be returned and
+directories will be searched.  Files of depth 3 will be returned. Directories
+of depth 3 will be returned, but their contents will not be added to the
+search.
 
 Generally, if you want to do directory pruning, you are encouraged to use the
-L</skip> method instead of writing your own logic using C<0 but true>.
+L</skip> method instead of writing your own logic using C<\0> and C<\1>.
 
 =head2 Extension modules and custom rule methods
 
