@@ -6,7 +6,7 @@ Path::Iterator::Rule - Iterative, recursive file finder
 
 =head1 VERSION
 
-version 0.015
+version 1.000
 
 =head1 SYNOPSIS
 
