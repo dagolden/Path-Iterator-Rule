@@ -492,7 +492,7 @@ C<\1> -- indicate the constraint is satisfied, and prune if it's a directory
 
 =item *
 
-C<\0> -- indicate the constrint is not satisfied, and prune if it's a directory
+C<\0> -- indicate the constraint is not satisfied, and prune if it's a directory
 
 =back
 

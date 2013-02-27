@@ -378,7 +378,7 @@ The custom rule subroutine must return one of four values:
 * A true value -- indicates the constraint is satisfied
 * A false value -- indicates the constraint is not satisfied
 * C<\1> -- indicate the constraint is satisfied, and prune if it's a directory
-* C<\0> -- indicate the constrint is not satisfied, and prune if it's a directory
+* C<\0> -- indicate the constraint is not satisfied, and prune if it's a directory
 
 
 A reference is a special flag that signals that a directory should not be
