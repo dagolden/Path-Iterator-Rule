@@ -278,33 +278,33 @@ sub _all {
 
 sub and {
     my $self = shift;
-    push @{ $self->{rules} }, $self->_rulify( "and", @_ );
+    push @{ $self->{rules} }, $self->_rulify(@_);
     return $self;
 }
 
 sub or {
     my $self    = shift;
-    my @rules   = $self->_rulify( "or", @_ );
+    my @rules   = $self->_rulify(@_);
     my $coderef = sub {
-        my ($result, $prune);
+        my ( $result, $prune );
         for my $rule (@rules) {
             $result = $rule->(@_);
             # once any rule says to prune, we remember that
-            $prune = (ref($prune) eq 'SCALAR') || (ref($result) eq 'SCALAR');
+            $prune = ( ref($prune) eq 'SCALAR' ) || ( ref($result) eq 'SCALAR' );
             # extract whether contraint was met
             $result = $$result if ref($result) eq 'SCALAR';
             # shortcut if met, propagating prune state
-            return( $prune ? \1 : 1 ) if $result;
+            return ( $prune ? \1 : 1 ) if $result;
         }
-        return( $prune ? \$result : $result ); # may or may not be met, but propagate prune state
+        return ( $prune ? \$result : $result )
+          ; # may or may not be met, but propagate prune state
     };
     return $self->and($coderef);
 }
 
 sub not {
     my $self    = shift;
-    my @rules   = $self->_rulify( "not", @_ );
-    my $obj     = $self->new->and(@rules);
+    my $obj     = $self->new->and(@_);
     my $coderef = sub {
         my $result = $obj->test(@_);
         return ref($result) ? \!$$result : !$result; # invert, but preserve prune
@@ -314,29 +314,29 @@ sub not {
 
 sub skip {
     my $self    = shift;
-    my @rules = @_;
+    my @rules   = @_;
     my $obj     = $self->new->or(@rules);
     my $coderef = sub {
         my $result = $obj->test(@_);
         $result = $$result if ref($result) eq 'SCALAR';
-        return $result ? \0 : \1; # invert result and flag for pruning
+        return $result ? \0 : \1;                    # invert result and flag for pruning
     };
     return $self->and($coderef);
 }
 
 sub test {
     my ( $self, $item, $base, $stash ) = @_;
-    my ($result, $prune);
+    my ( $result, $prune );
     for my $rule ( @{ $self->{rules} } ) {
         $result = $rule->( $item, $base, $stash ) || 0;
         # once any rule says to prune, we remember that
-        $prune = (ref($prune) eq 'SCALAR') || (ref($result) eq 'SCALAR');
+        $prune = ( ref($prune) eq 'SCALAR' ) || ( ref($result) eq 'SCALAR' );
         # extract whether contraint was met
         $result = $$result if ref($result) eq 'SCALAR';
         # shortcut if not met, propagating prune state
-        return( $prune ? \0 : 0 ) if ! $result;
+        return ( $prune ? \0 : 0 ) if !$result;
     }
-    return( $prune ? \1 : 1 ); # all constaints met, but propagate prune state
+    return ( $prune ? \1 : 1 ); # all constaints met, but propagate prune state
 }
 
 #--------------------------------------------------------------------------#
@@ -344,7 +344,7 @@ sub test {
 #--------------------------------------------------------------------------#
 
 sub _rulify {
-    my ( $self, $method, @args ) = @_;
+    my ( $self, @args ) = @_;
     my @rules;
     for my $arg (@args) {
         my $rule;
