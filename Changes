@@ -2,6 +2,13 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [INCOMPATIBLE CHANGES]
+
+    - Custom rule logic has changed.  The previous "0 but true" hack
+      will throw an exception.  Custom rules should return \1 or \0
+      to signal that a directory should be pruned but returned or
+      pruned and skipped, respectively
+
     [ADDED]
 
     - Added 'skip_subdirs' method (Issue #7)
