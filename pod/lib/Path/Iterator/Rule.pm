@@ -295,7 +295,7 @@ A depth of 1 means its children.  (This is similar to the Unix C<find> utility.)
 
   # Individual perl file rules
   $rule->perl_module;     # .pm files
-  $rule->perl_pod;        # .pod files 
+  $rule->perl_pod;        # .pod files
   $rule->perl_test;       # .t files
   $rule->perl_installer;  # Makefile.PL or Build.PL
   $rule->perl_script;     # .pl or 'perl' in the shebang
@@ -377,13 +377,18 @@ The custom rule subroutine must return one of four values:
 =for :list
 * A true value -- indicates the constraint is satisfied
 * A false value -- indicates the constraint is not satisfied
-* C<\1> -- indicate the constraint is satified, and prune if it's a directory
+* C<\1> -- indicate the constraint is satisfied, and prune if it's a directory
 * C<\0> -- indicate the constrint is not satisfied, and prune if it's a directory
 
-The legacy "0 but true" is no longer valid and will throw an exception
-if it is detected.
 
-For example, this is equivalent to the "max_depth" rule method with
+A reference is a special flag that signals that a directory should not be
+searched recursively, regardless of whether the directory should be
+returned by the iterator or not.
+
+The legacy "0 but true" value used previously for pruning is no longer valid
+and will throw an exception if it is detected.
+
+Here is an example.  This is equivalent to the "max_depth" rule method with
 a depth of 3:
 
   $rule->and(
@@ -399,6 +404,23 @@ Files and directories and directories up to depth 3 will be returned and
 directories will be searched.  Files of depth 3 will be returned. Directories
 of depth 3 will be returned, but their contents will not be added to the
 search.
+
+Returning a reference is "sticky" -- they will propagate through "and" and "or"
+logic.
+
+    0 && \0 = \0    \0 && 0 = \0    0 || \0 = \0    \0 || 0 = \0
+    0 && \1 = \0    \0 && 1 = \0    0 || \1 = \1    \0 || 1 = \1
+    1 && \0 = \0    \1 && 0 = \0    1 || \0 = \1    \1 || 0 = \1
+    1 && \1 = \1    \1 && 1 = \1    1 || \1 = \1    \1 || 1 = \1
+
+Once a directory is flagged to be pruned, it will be pruned regardless of
+subsequent rules.
+
+    $rule->max_depth(3)->name(qr/foo/);
+
+This will return files or directories with "foo" in the name, but all
+directories at depth 3 will be pruned, regardless of whether they match the
+name rule.
 
 Generally, if you want to do directory pruning, you are encouraged to use the
 L</skip> method instead of writing your own logic using C<\0> and C<\1>.
