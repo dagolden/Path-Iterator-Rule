@@ -57,7 +57,7 @@ sub add_helper {
         }
     }
     else {
-        Carp::carp("Can't add rule '$name' because it conflicts with an existing method");
+        Carp::croak("Can't add rule '$name' because it conflicts with an existing method");
     }
 }
 

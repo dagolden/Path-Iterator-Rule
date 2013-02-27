@@ -2,7 +2,6 @@ use 5.006;
 use strict;
 use warnings;
 use Test::More 0.92;
-use Test::Warn;
 use File::Temp;
 use File::pushd qw/pushd/;
 
@@ -23,10 +22,8 @@ can_ok( 'Path::Iterator::Rule', 'txt' );
 # check we can do this via object, too
 my $rule = Path::Iterator::Rule->new;
 
-warning_like
-    sub { $rule->add_helper( txt => sub { ... } ) },
-    qr/Can't add rule 'txt'/,
-    "exception if helper exists";
+eval { $rule->add_helper( txt => sub { ... } ) };
+like( $@, qr/Can't add rule 'txt'/, "exception if helper exists" );
 
 {
     my $td = make_tree(
