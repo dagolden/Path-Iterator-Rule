@@ -319,8 +319,20 @@ sub skip {
     my $obj     = $self->new->or(@rules);
     my $coderef = sub {
         my $result = $obj->test(@_);
-        $result = $$result if ref($result) eq 'SCALAR';
-        return $result ? \0 : \1;                    # invert result and flag for pruning
+        my ($prune, $interest);
+        if ( ref($result) eq 'SCALAR' ) {
+            # test told us to prune, so make that sticky
+            $prune = 1;
+            # negate test result
+            $interest = !$$result;
+        }
+        else {
+            # prune if test was true
+            $prune = $result;
+            # negate test result
+            $interest = !$result;
+        }
+        return $prune ? \$interest : $interest;
     };
     return $self->and($coderef);
 }
