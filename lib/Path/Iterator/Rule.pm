@@ -177,14 +177,10 @@ sub _iter {
                 }
                 # New way to signal prune is returning a reference to a scalar.
                 # Value of the scalar indicates if it should be returned by the
-                # iterator or not; old method is kept for backward compatibility
+                # iterator or not
                 if ( ref $interest eq 'SCALAR' ) {
                     $prune    = 1;
                     $interest = $$interest;
-                }
-                else {
-                    $prune = $interest && !( 0 + $interest ); # capture "0 but true"
-                    $interest += 0;                           # then ignore "but true"
                 }
             }
 
