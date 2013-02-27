@@ -68,7 +68,6 @@
             "Test::Deep" : "0",
             "Test::Filename" : "0.03",
             "Test::More" : "0.92",
-            "Test::Warn" : "0",
             "autodie" : "0"
          }
       }
@@ -95,6 +94,7 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "0.015"
+   "version" : "0.015",
+   "x_contributors" : []
 }
 

@@ -291,7 +291,7 @@ sub or {
         for my $rule (@rules) {
             $result = $rule->(@_);
             # once any rule says to prune, we remember that
-            $prune = ( ref($prune) eq 'SCALAR' ) || ( ref($result) eq 'SCALAR' );
+            $prune ||= ref($result) eq 'SCALAR';
             # extract whether contraint was met
             $result = $$result if ref($result) eq 'SCALAR';
             # shortcut if met, propagating prune state
@@ -346,7 +346,7 @@ sub test {
             Carp::croak( "0 but true no longer supported by custom rules" );
         }
         # once any rule says to prune, we remember that
-        $prune = ( ref($prune) eq 'SCALAR' ) || ( ref($result) eq 'SCALAR' );
+        $prune ||= ref($result) eq 'SCALAR';
         # extract whether contraint was met
         $result = $$result if ref($result) eq 'SCALAR';
         # shortcut if not met, propagating prune state

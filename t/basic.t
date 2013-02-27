@@ -8,7 +8,7 @@ use File::pushd qw/pushd/;
 use lib 't/lib';
 use PCNTest;
 
-use Path::Iterator::Rule;
+require_ok( 'Path::Iterator::Rule' );
 
 #--------------------------------------------------------------------------#
 
