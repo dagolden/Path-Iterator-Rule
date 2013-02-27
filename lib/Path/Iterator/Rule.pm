@@ -86,7 +86,7 @@ sub _objectify {
 
 sub _defaults {
     return (
-        _stringify       => 1,
+        _stringify      => 1,
         follow_symlinks => 1,
         depthfirst      => 0,
         sorted          => 1,
@@ -98,7 +98,7 @@ sub _defaults {
 
 sub _fast_defaults {
     return (
-        _stringify       => 1,
+        _stringify      => 1,
         follow_symlinks => 1,
         depthfirst      => -1,
         sorted          => 0,
@@ -113,12 +113,12 @@ sub _fast_defaults {
 #--------------------------------------------------------------------------#
 
 sub iter {
-    my $self     = shift;
+    my $self = shift;
     $self->_iter( { $self->_defaults }, @_ );
 }
 
 sub iter_fast {
-    my $self     = shift;
+    my $self = shift;
     $self->_iter( { $self->_fast_defaults }, @_ );
 }
 
@@ -132,7 +132,7 @@ sub _iter {
     my %opts = ( %$defaults, %$args );
 
     # unroll these for efficiency
-    my $opt_stringify      = $opts{_stringify};
+    my $opt_stringify       = $opts{_stringify};
     my $opt_depthfirst      = $opts{depthfirst};
     my $opt_follow_symlinks = $opts{follow_symlinks};
     my $opt_sorted          = $opts{sorted};
@@ -179,7 +179,7 @@ sub _iter {
                 # Value of the scalar indicates if it should be returned by the
                 # iterator or not; old method is kept for backward compatibility
                 if ( ref $interest eq 'SCALAR' ) {
-                    $prune = 1;
+                    $prune    = 1;
                     $interest = $$interest;
                 }
                 else {
@@ -196,7 +196,7 @@ sub _iter {
             }
 
             # if it's a directory, maybe add children to the queue
-            if (   (-d $string_item )
+            if (   ( -d $string_item )
                 && ( !$prune )
                 && ( !$opt_loop_safe || $self->_is_unique( $string_item, $stash ) ) )
             {
@@ -230,7 +230,8 @@ sub _iter {
                     if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
                         # without being retested
-                        push @next, [( $opt_relative ? File::Spec->abs2rel($item, $origin) : $item )], $base, $depth, $origin
+                        push @next, [ ( $opt_relative ? File::Spec->abs2rel( $item, $origin ) : $item ) ],
+                          $base, $depth, $origin
                           if $interest && $opt_depthfirst > 0;
                         unshift @queue, @next;
                         redo LOOP if $opt_depthfirst > 0;
@@ -240,7 +241,7 @@ sub _iter {
                     }
                 }
             }
-            return ( $opt_relative ? File::Spec->abs2rel($item, $origin) : $item )
+            return ( $opt_relative ? File::Spec->abs2rel( $item, $origin ) : $item )
               if $interest;
             redo LOOP;
         }
@@ -410,7 +411,7 @@ sub _reflag {
 
 # "simple" helpers take no arguments
 my %simple_helpers = (
-    directory => sub { -d $_ },             # see also -d => dir below
+    directory => sub { -d $_ },           # see also -d => dir below
     dangling => sub { -l $_ && !stat $_ },
 );
 
@@ -458,7 +459,7 @@ my %complex_helpers = (
         my $max_depth = 0 + shift; # if this warns, do here and not on every file
         return sub {
             my ( $f, $b, $stash ) = @_;
-            return 1 if $stash->{_depth} < $max_depth;
+            return 1  if $stash->{_depth} < $max_depth;
             return \1 if $stash->{_depth} == $max_depth;
             return \0;
           }
