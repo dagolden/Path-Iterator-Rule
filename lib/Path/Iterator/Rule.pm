@@ -342,6 +342,9 @@ sub test {
     my ( $result, $prune );
     for my $rule ( @{ $self->{rules} } ) {
         $result = $rule->( $item, $base, $stash ) || 0;
+        if ( ! ref($result) && $result eq '0 but true' ) {
+            Carp::croak( "0 but true no longer supported by custom rules" );
+        }
         # once any rule says to prune, we remember that
         $prune = ( ref($prune) eq 'SCALAR' ) || ( ref($result) eq 'SCALAR' );
         # extract whether contraint was met
@@ -368,7 +371,7 @@ sub _rulify {
             $rule = $arg;
         }
         else {
-            Carp::croak("Argument to ->and() must be coderef or Path::Iterator::Rule");
+            Carp::croak("Rules must be coderef or Path::Iterator::Rule");
         }
         push @rules, $rule;
     }

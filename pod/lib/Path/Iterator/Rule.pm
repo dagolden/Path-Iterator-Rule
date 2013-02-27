@@ -380,7 +380,8 @@ The custom rule subroutine must return one of four values:
 * C<\1> -- indicate the constraint is satified, and prune if it's a directory
 * C<\0> -- indicate the constrint is not satisfied, and prune if it's a directory
 
-The legacy "0 but true" is no longer valid.
+The legacy "0 but true" is no longer valid and will throw an exception
+if it is detected.
 
 For example, this is equivalent to the "max_depth" rule method with
 a depth of 3:

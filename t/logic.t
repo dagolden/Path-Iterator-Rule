@@ -25,6 +25,18 @@ my @tree = qw(
 my $td = make_tree(@tree);
 
 {
+    my $rule = PIR->new;
+    eval { $rule->and( bless {}, "Dummy" ) };
+    like( $@, qr/rules must be/i, "catch invalid rules" );
+}
+
+{
+    my $rule = PIR->new->and( sub { return "0 but true" });
+    eval { $rule->all($td) };
+    like( $@, qr/0 but true/i, "catch 0 but true" );
+}
+
+{
   my @files;
   my $rule = PIR->new->file->not_name("gggg.txt");
   my $expected = [ qw(
