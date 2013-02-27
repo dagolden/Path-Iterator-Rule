@@ -150,9 +150,12 @@ object to allow method chaining.
   );
 
 Takes one or more alternatives and will prune a directory if any of the
-criteria match.  For files, it is equivalent to
-C<< $rule->not($rule->or(@rules)) >>.  Returns the object to allow method
-chaining.
+criteria match or if any of the rules already indicate the directory should be
+pruned.  Pruning means the directory will not be returned by the iterator and
+will not be searched.
+
+For files, it is equivalent to C<< $rule->not($rule->or(@rules)) >>.  Returns
+the object to allow method chaining.
 
 This method should be called as early as possible in the rule chain.
 See L</skip_dirs> below for further explanation and an example.

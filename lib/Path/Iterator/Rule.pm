@@ -322,9 +322,9 @@ sub skip {
         my ($prune, $interest);
         if ( ref($result) eq 'SCALAR' ) {
             # test told us to prune, so make that sticky
+            # and also skip it
             $prune = 1;
-            # negate test result
-            $interest = !$$result;
+            $interest = 0;
         }
         else {
             # prune if test was true

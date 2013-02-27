@@ -10,7 +10,7 @@ use File::pushd qw/pushd/;
 use lib 't/lib';
 use PCNTest;
 
-use Path::Iterator::Rule;
+use PIR;
 
 #--------------------------------------------------------------------------#
 
@@ -26,7 +26,7 @@ my $td = make_tree(@tree);
 
 {
   my @files;
-  my $rule = Path::Iterator::Rule->new->file->not_name("gggg.txt");
+  my $rule = PIR->new->file->not_name("gggg.txt");
   my $expected = [ qw(
     aaaa.txt
     bbbb.txt
@@ -40,7 +40,7 @@ my $td = make_tree(@tree);
 
 {
   my @files;
-  my $rule = Path::Iterator::Rule->new->file;
+  my $rule = PIR->new->file;
   $rule->or(
     $rule->new->name("gggg.txt"),
     $rule->new->name("bbbb.txt"),
@@ -54,7 +54,7 @@ my $td = make_tree(@tree);
 
 {
   my @files;
-  my $rule = Path::Iterator::Rule->new;
+  my $rule = PIR->new;
   $rule->skip(
     $rule->new->name("gggg.txt"),
     $rule->new->name("cccc"),
@@ -66,6 +66,56 @@ my $td = make_tree(@tree);
   )];
   @files = map { unixify($_, $td) } $rule->all($td);
   cmp_deeply( \@files, $expected, "skip() test")
+    or diag explain { got => \@files, expected => $expected };
+}
+
+{
+  my @files;
+  my $rule = PIR->new;
+  $rule->skip( sub { return \1 if /eeee$/ } );
+  my $expected = [qw(
+    .
+    aaaa.txt
+    bbbb.txt
+    cccc
+    gggg.txt
+    cccc/dddd.txt
+  )];
+  @files = map { unixify($_, $td) } $rule->all($td);
+  cmp_deeply( \@files, $expected, "skip() with custom rule")
+    or diag explain { got => \@files, expected => $expected };
+}
+
+{
+  my @files;
+  my $rule = PIR->new;
+  $rule->skip( sub { return \0 if /eeee$/ } );
+  my $expected = [qw(
+    .
+    aaaa.txt
+    bbbb.txt
+    cccc
+    gggg.txt
+    cccc/dddd.txt
+  )];
+  @files = map { unixify($_, $td) } $rule->all($td);
+  cmp_deeply( \@files, $expected, "skip() with crazy custom rule")
+    or diag explain { got => \@files, expected => $expected };
+}
+
+{
+  my @files;
+  my $rule = PIR->new;
+  $rule->skip( PIR->new->skip_dirs("eeee")->name("gggg*") );
+  my $expected = [qw(
+    .
+    aaaa.txt
+    bbbb.txt
+    cccc
+    cccc/dddd.txt
+  )];
+  @files = map { unixify($_, $td) } $rule->all($td);
+  cmp_deeply( \@files, $expected, "skip() with skip")
     or diag explain { got => \@files, expected => $expected };
 }
 
