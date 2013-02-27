@@ -43,6 +43,20 @@ plan skip_all => "No symlink support"
     pppp/ffff.txt
   );
 
+  my @not_loop_safe = qw(
+    .
+    aaaa.txt
+    bbbb.txt
+    cccc
+    gggg.txt
+    pppp
+    qqqq.txt
+    cccc/dddd.txt
+    cccc/eeee
+    pppp/ffff.txt
+    cccc/eeee/ffff.txt
+  );
+
   my @nofollow = qw(
     .
     aaaa.txt
@@ -65,6 +79,10 @@ plan skip_all => "No symlink support"
   @files = map  { unixify($_, $td) } $rule->all($td);
   cmp_deeply( \@files, \@follow, "Follow symlinks")
     or diag explain { got => \@files, expected => \@follow };
+
+  @files = map  { unixify($_, $td) } $rule->all($td, {loop_safe => 0});
+  cmp_deeply( \@files, \@not_loop_safe, "Follow symlinks, but loop_safe = 0")
+    or diag explain { got => \@files, expected => \@not_loop_safe };
 
   @files = map  { unixify($_, $td) } $rule->all({follow_symlinks => 0}, $td);
   cmp_deeply( \@files, \@nofollow, "Don't follow symlinks")

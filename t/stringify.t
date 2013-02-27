@@ -43,7 +43,7 @@ use PIRTiny;
     or diag explain \@files;
 
   @files = map  { unixify($_, $td) } $rule->all_fast($td);
-  cmp_deeply( \@files, \@breadth, "Object-based subclass (all_fast)")
+  cmp_deeply( [sort @files], [sort @breadth], "Object-based subclass (all_fast)")
     or diag explain \@files;
 
 }

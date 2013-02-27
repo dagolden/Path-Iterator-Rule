@@ -24,9 +24,12 @@ use Path::Iterator::Rule;
     );
 
     my @depth_pre = qw(
+      .
       aaaa.txt
       bbbb.txt
+      cccc
       cccc/dddd.txt
+      cccc/eeee
       cccc/eeee/ffff.txt
       gggg.txt
     );
@@ -36,13 +39,16 @@ use Path::Iterator::Rule;
       bbbb.txt
       cccc/dddd.txt
       cccc/eeee/ffff.txt
+      cccc/eeee
+      cccc
       gggg.txt
+      .
     );
 
     my $td = make_tree(@tree);
 
     my ( $iter, @files );
-    my $rule = Path::Iterator::Rule->new->file;
+    my $rule = Path::Iterator::Rule->new;
 
     @files =
       map { path($_)->stringify } $rule->all( { depthfirst => -1, relative => 1 }, $td );

@@ -29,7 +29,8 @@ use namespace::clean;
 
 sub new {
     my $class = shift;
-    return bless { rules => [] }, ref $class || $class;
+    $class = ref $class if ref $class;
+    return bless { rules => [] }, $class;
 }
 
 sub clone {
@@ -39,7 +40,7 @@ sub clone {
 
 sub add_helper {
     my ( $class, $name, $coderef, $skip_negation ) = @_;
-    $class = ref $class || $class;
+    $class = ref $class if ref $class;
     if ( !$class->can($name) ) {
         no strict 'refs'; ## no critic
         *$name = sub {
@@ -195,8 +196,8 @@ sub _iter {
             }
 
             # if it's a directory, maybe add children to the queue
-            if (   -d $string_item
-                && !$prune
+            if (   (-d $string_item )
+                && ( !$prune )
                 && ( !$opt_loop_safe || $self->_is_unique( $string_item, $stash ) ) )
             {
                 if ( !-r $string_item ) {

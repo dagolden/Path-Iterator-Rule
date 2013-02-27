@@ -17,7 +17,7 @@ sub _objectify {
 
 sub _children {
     my $self = shift;
-    my $path =  shift; # stringify objects
+    my $path =  shift;
     return map { [ $_->basename, $_ ] } $path->children
 }
 
@@ -28,4 +28,10 @@ sub _defaults {
     );
 }
 
-*_fast_defaults = \&_defaults;
+sub _fast_defaults {
+    return (
+        $_[0]->SUPER::_fast_defaults,
+        _stringify => 0,
+    );
+}
+

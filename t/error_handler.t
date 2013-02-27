@@ -31,7 +31,7 @@ my $td = make_tree(@tree);
   my $handler = sub { push @msg, [@_]; };
   my $rule = Path::Iterator::Rule->new->and( sub { die "Evil here" } );
   eval { $rule->all($td, { error_handler => $handler } ) };
-  is( $@, '', "error handler catches fatalitis" );
+  is( $@, '', "error handler catches fatalities" );
   is( scalar @msg, 3, "saw correct number of errors" );
   my ($file, $text) = @{$msg[0]};
   is( $file, $td, "object has file path of error");
