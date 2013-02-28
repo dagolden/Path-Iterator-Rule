@@ -487,6 +487,40 @@ my %complex_helpers = (
             return ( first { $shebang =~ $_ } @patterns ) ? 1 : 0;
         };
     },
+    contents_match => sub {
+        my @regexp = @_;
+        my $filter = ':encoding(UTF-8)';
+        $filter = shift @regexp unless ref $regexp[0];
+        return sub {
+            my $f = shift;
+            return unless !-d $f;
+            my $contents = do {
+                local $/ = undef;
+                open my $fh, "<$filter", $f;
+                <$fh>;
+            };
+            for my $re (@regexp) {
+                return 1 if $contents =~ $re;
+            }
+            return 0;
+        };
+    },
+    line_match => sub {
+        my @regexp = @_;
+        my $filter = ':encoding(UTF-8)';
+        $filter = shift @regexp unless ref $regexp[0];
+        return sub {
+            my $f = shift;
+            return unless !-d $f;
+            open my $fh, "<$filter", $f;
+            while (my $line = <$fh>) {
+                for my $re (@regexp) {
+                    return 1 if $line =~ $re;
+                }
+            }
+            return 0;
+        };
+    },
 );
 
 while ( my ( $k, $v ) = each %complex_helpers ) {
