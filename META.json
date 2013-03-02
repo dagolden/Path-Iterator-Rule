@@ -48,7 +48,7 @@
             "Text::Glob" : "0",
             "Try::Tiny" : "0",
             "namespace::clean" : "0",
-            "perl" : "5.012",
+            "perl" : "5.010",
             "re" : "0",
             "strict" : "0",
             "warnings" : "0",
@@ -75,11 +75,11 @@
    "provides" : {
       "PIR" : {
          "file" : "lib/PIR.pm",
-         "version" : "1.000"
+         "version" : "1.001"
       },
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "1.000"
+         "version" : "1.001"
       }
    },
    "release_status" : "stable",
@@ -94,7 +94,9 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "1.000",
-   "x_contributors" : []
+   "version" : "1.001",
+   "x_contributors" : [
+      "Graham Knop <haarg@haarg.org>"
+   ]
 }
 
