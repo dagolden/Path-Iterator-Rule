@@ -22,7 +22,7 @@ can_ok( 'Path::Iterator::Rule', 'txt' );
 # check we can do this via object, too
 my $rule = Path::Iterator::Rule->new;
 
-eval { $rule->add_helper( txt => sub { ... } ) };
+eval { $rule->add_helper( txt => sub { 1 } ) };
 like( $@, qr/Can't add rule 'txt'/, "exception if helper exists" );
 
 {
