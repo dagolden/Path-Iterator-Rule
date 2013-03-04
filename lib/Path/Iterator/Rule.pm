@@ -489,14 +489,14 @@ my %complex_helpers = (
     },
     contents_match => sub {
         my @regexp = @_;
-        my $encoding = 'UTF-8';
-        $encoding = shift @regexp unless ref $regexp[0];
+        my $filter = ':encoding(UTF-8)';
+        $filter = shift @regexp unless ref $regexp[0];
         return sub {
             my $f = shift;
             return unless !-d $f;
             my $contents = do {
                 local $/ = undef;
-                open my $fh, "<:encoding($encoding)", $f;
+                open my $fh, "<$filter", $f;
                 <$fh>;
             };
             for my $re (@regexp) {
@@ -507,12 +507,12 @@ my %complex_helpers = (
     },
     line_match => sub {
         my @regexp = @_;
-        my $encoding = 'UTF-8';
-        $encoding = shift @regexp unless ref $regexp[0];
+        my $filter = ':encoding(UTF-8)';
+        $filter = shift @regexp unless ref $regexp[0];
         return sub {
             my $f = shift;
             return unless !-d $f;
-            open my $fh, "<:encoding($encoding)", $f;
+            open my $fh, "<$filter", $f;
             while (my $line = <$fh>) {
                 for my $re (@regexp) {
                     return 1 if $line =~ $re;

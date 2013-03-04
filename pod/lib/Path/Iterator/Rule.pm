@@ -332,12 +332,12 @@ files that match one of the expressions.
 The expressions are applied to the file's contents as a single string. For
 large files, this is likely to take significant time and memory.
 
-Files are assumed to be encoded in UTF-8, but an alternative encoding can
+Files are assumed to be encoded in UTF-8, but alternative Perl IO layers can
 be passed as the first argument:
 
-  $rule->contents_match("iso-8859-1", qr/BEGIN .* END/xs);
+  $rule->contents_match(":encoding(iso-8859-1)", qr/BEGIN .* END/xs);
 
-See L<Encode::Supported> for a list of supported encodings.
+See L<perlio> for further details.
 
 =head3 C<line_match>
 
@@ -346,7 +346,7 @@ See L<Encode::Supported> for a list of supported encodings.
 The C<line_match> rule takes a list of regular expressions and returns
 files with at least one line that matches one of the expressions. 
 
-Files are assumed to be encoded in UTF-8, but an alternative encoding can
+Files are assumed to be encoded in UTF-8, but alternative Perl IO layers can
 be passed as the first argument.
 
 =head3 C<shebang>
