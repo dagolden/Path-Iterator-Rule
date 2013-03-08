@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [FIXED]
+
+    - Returning relative results now works with subclasses
+
 1.001     2013-03-02 08:50:25 America/New_York
 
     [FIXED]

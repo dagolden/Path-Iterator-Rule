@@ -226,7 +226,7 @@ sub _iter {
                     if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
                         # without being retested
-                        push @next, [ ( $opt_relative ? File::Spec->abs2rel( $item, $origin ) : $item ) ],
+                        push @next, [ ( $opt_relative ? $self->_objectify(File::Spec->abs2rel( $string_item, $origin )) : $item ) ],
                           $base, $depth, $origin
                           if $interest && $opt_depthfirst > 0;
                         unshift @queue, @next;
@@ -237,7 +237,7 @@ sub _iter {
                     }
                 }
             }
-            return ( $opt_relative ? File::Spec->abs2rel( $item, $origin ) : $item )
+            return ( $opt_relative ? $self->_objectify(File::Spec->abs2rel( $string_item, $origin )) : $item )
               if $interest;
             redo LOOP;
         }
