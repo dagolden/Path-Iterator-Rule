@@ -75,11 +75,11 @@
    "provides" : {
       "PIR" : {
          "file" : "lib/PIR.pm",
-         "version" : "1.002"
+         "version" : "1.003"
       },
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "1.002"
+         "version" : "1.003"
       }
    },
    "release_status" : "stable",
@@ -94,7 +94,7 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "1.002",
+   "version" : "1.003",
    "x_contributors" : [
       "Graham Knop <haarg@haarg.org>"
    ]
