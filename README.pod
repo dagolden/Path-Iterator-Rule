@@ -825,11 +825,11 @@ David Golden <dagolden@cpan.org>
 
 =item *
 
-Graham Knop <haarg@haarg.org>
+Graham Knop <haarg@cpan.org>
 
 =item *
 
-Toby Inkster <mail@tobyinkster.co.uk>
+Toby Inkster <tobyink@cpan.org>
 
 =back
 
