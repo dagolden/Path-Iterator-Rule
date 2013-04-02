@@ -4,7 +4,7 @@
       "David Golden <dagolden@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300031, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Zilla version 4.300031, CPAN::Meta::Converter version 2.130880",
    "license" : [
       "apache_2_0"
    ],
@@ -75,11 +75,11 @@
    "provides" : {
       "PIR" : {
          "file" : "lib/PIR.pm",
-         "version" : "1.004"
+         "version" : "1.005"
       },
       "Path::Iterator::Rule" : {
          "file" : "lib/Path/Iterator/Rule.pm",
-         "version" : "1.004"
+         "version" : "1.005"
       }
    },
    "release_status" : "stable",
@@ -94,7 +94,7 @@
          "web" : "https://github.com/dagolden/path-iterator-rule"
       }
    },
-   "version" : "1.004",
+   "version" : "1.005",
    "x_contributors" : [
       "Graham Knop <haarg@cpan.org>",
       "Toby Inkster <tobyink@cpan.org>"
