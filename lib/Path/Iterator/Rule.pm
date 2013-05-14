@@ -288,7 +288,7 @@ sub or {
             $result = $rule->(@_);
             # once any rule says to prune, we remember that
             $prune ||= ref($result) eq 'SCALAR';
-            # extract whether contraint was met
+            # extract whether constraint was met
             $result = $$result if ref($result) eq 'SCALAR';
             # shortcut if met, propagating prune state
             return ( $prune ? \1 : 1 ) if $result;
@@ -343,12 +343,12 @@ sub test {
         }
         # once any rule says to prune, we remember that
         $prune ||= ref($result) eq 'SCALAR';
-        # extract whether contraint was met
+        # extract whether constraint was met
         $result = $$result if ref($result) eq 'SCALAR';
         # shortcut if not met, propagating prune state
         return ( $prune ? \0 : 0 ) if !$result;
     }
-    return ( $prune ? \1 : 1 ); # all constaints met, but propagate prune state
+    return ( $prune ? \1 : 1 ); # all constraints met, but propagate prune state
 }
 
 #--------------------------------------------------------------------------#
