@@ -533,7 +533,7 @@ If you want speed over safety, set these options:
         error_handler => undef
     );
 
-Alternatively, use the C<iter_fast> and C<fast_all> methods instead, which set
+Alternatively, use the C<iter_fast> and C<all_fast> methods instead, which set
 these options for you.
 
     $iter = $rule->iter( @dirs, \%options );

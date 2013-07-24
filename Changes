@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [DOCS]
+
+    - Fixed a typo
+
 1.005     2013-04-02 09:33:44 America/New_York
 
     [FIXED]
