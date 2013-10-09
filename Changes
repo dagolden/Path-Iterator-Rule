@@ -10,6 +10,8 @@ Revision history for Path-Iterator-Rule
 
     - Removed dependency on Data::Clone
 
+    - Removed dependency on namespace::clean
+
 1.005     2013-04-02 09:33:44 America/New_York
 
     [FIXED]

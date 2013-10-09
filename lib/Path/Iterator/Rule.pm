@@ -11,16 +11,14 @@ use warnings::register;
 
 # Dependencies
 use re 'regexp_pattern';
-use Carp;
-use File::Basename qw/basename/;
-use File::Spec;
-use List::Util qw/first/;
+use Carp ();
+use File::Basename ();
+use File::Spec ();
+use List::Util ();
 use Number::Compare 0.02;
-use Scalar::Util qw/blessed/;
-use Text::Glob qw/glob_to_regex/;
+use Scalar::Util ();
+use Text::Glob ();
 use Try::Tiny;
-
-use namespace::clean;
 
 #--------------------------------------------------------------------------#
 # constructors and meta methods
@@ -143,8 +141,8 @@ sub _iter {
     my $self     = shift;
     my $defaults = shift;
     my $args =
-        ref( $_[0] )  && !blessed( $_[0] )  ? shift
-      : ref( $_[-1] ) && !blessed( $_[-1] ) ? pop
+        ref( $_[0] )  && !Scalar::Util::blessed( $_[0] )  ? shift
+      : ref( $_[-1] ) && !Scalar::Util::blessed( $_[-1] ) ? pop
       :                                       {};
     my %opts = ( %$defaults, %$args );
 
@@ -167,7 +165,7 @@ sub _iter {
     # if object is arrayref, then that's a special case signal that it
     # was already of interest and can finally be returned for postorder searches
     my @queue =
-      map { my $i = $self->_objectify($_); ( $i, basename("$_"), 0, $i ) } @_ ? @_ : '.';
+      map { my $i = $self->_objectify($_); ( $i, File::Basename::basename("$_"), 0, $i ) } @_ ? @_ : '.';
 
     return sub {
         LOOP: {
@@ -377,7 +375,7 @@ sub _rulify {
     my @rules;
     for my $arg (@args) {
         my $rule;
-        if ( blessed($arg) && $arg->isa("Path::Iterator::Rule") ) {
+        if ( Scalar::Util::blessed($arg) && $arg->isa("Path::Iterator::Rule") ) {
             $rule = sub { $arg->test(@_) };
         }
         elsif ( ref($arg) eq 'CODE' ) {
@@ -414,7 +412,7 @@ sub _is_unique {
 sub _regexify {
     my ( $re, $add ) = @_;
     $add ||= '';
-    my $new = ref($re) eq 'Regexp' ? $re : glob_to_regex($re);
+    my $new = ref($re) eq 'Regexp' ? $re : Text::Glob::glob_to_regex($re);
     my ( $pattern, $flags ) = regexp_pattern($new);
     my $new_flags = $add ? _reflag( $flags, $add ) : "";
     return qr/$new_flags$pattern/;
@@ -452,7 +450,7 @@ sub _generate_name_matcher {
     if ( @patterns > 1 ) {
         return sub {
             my $name = "$_[1]";
-            return ( first { $name =~ $_ } @patterns ) ? 1 : 0;
+            return ( List::Util::first { $name =~ $_ } @patterns ) ? 1 : 0;
           }
     }
     else {
@@ -501,7 +499,7 @@ my %complex_helpers = (
             open my $fh, "<", $f;
             my $shebang = <$fh>;
             return unless defined $shebang;
-            return ( first { $shebang =~ $_ } @patterns ) ? 1 : 0;
+            return ( List::Util::first { $shebang =~ $_ } @patterns ) ? 1 : 0;
         };
     },
     contents_match => sub {
