@@ -13,38 +13,37 @@ use PIRTiny;
 #--------------------------------------------------------------------------#
 
 {
-  my @tree = qw(
-    aaaa.txt
-    bbbb.txt
-    cccc/dddd.txt
-    cccc/eeee/ffff.txt
-    gggg.txt
-  );
+    my @tree = qw(
+      aaaa.txt
+      bbbb.txt
+      cccc/dddd.txt
+      cccc/eeee/ffff.txt
+      gggg.txt
+    );
 
+    my @breadth = qw(
+      .
+      aaaa.txt
+      bbbb.txt
+      cccc
+      gggg.txt
+      cccc/dddd.txt
+      cccc/eeee
+      cccc/eeee/ffff.txt
+    );
 
-  my @breadth = qw(
-    .
-    aaaa.txt
-    bbbb.txt
-    cccc
-    gggg.txt
-    cccc/dddd.txt
-    cccc/eeee
-    cccc/eeee/ffff.txt
-  );
-  
-  my $td = make_tree(@tree);
+    my $td = make_tree(@tree);
 
-  my ($iter, @files);
-  my $rule = PIRTiny->new;
+    my ( $iter, @files );
+    my $rule = PIRTiny->new;
 
-  @files = map  { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, \@breadth, "Object-based subclass (all)")
-    or diag explain \@files;
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, \@breadth, "Object-based subclass (all)" )
+      or diag explain \@files;
 
-  @files = map  { unixify($_, $td) } $rule->all_fast($td);
-  cmp_deeply( [sort @files], [sort @breadth], "Object-based subclass (all_fast)")
-    or diag explain \@files;
+    @files = map { unixify( $_, $td ) } $rule->all_fast($td);
+    cmp_deeply( [ sort @files ], [ sort @breadth ], "Object-based subclass (all_fast)" )
+      or diag explain \@files;
 
 }
 

@@ -14,31 +14,31 @@ use Path::Iterator::Rule;
 #--------------------------------------------------------------------------#
 
 {
-  my @tree = qw(
-    aaaa.txt
-    gggg.txt
-    cccc.txt
-    dddd.txt
-    bbbb.txt
-    eeee.txt
-  );
+    my @tree = qw(
+      aaaa.txt
+      gggg.txt
+      cccc.txt
+      dddd.txt
+      bbbb.txt
+      eeee.txt
+    );
 
-  my $td = make_tree(@tree);
+    my $td = make_tree(@tree);
 
-  opendir( my $dh, "$td" );
-  my @expected = ( grep { $_ ne "." && $_ ne ".." } readdir $dh );
-  closedir $dh;
+    opendir( my $dh, "$td" );
+    my @expected = ( grep { $_ ne "." && $_ ne ".." } readdir $dh );
+    closedir $dh;
 
-  my ($iter, @files);
-  my $rule = Path::Iterator::Rule->new->file;
+    my ( $iter, @files );
+    my $rule = Path::Iterator::Rule->new->file;
 
-  @files = map  { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, [ sort @expected ], "all() gives sorted order")
-    or diag explain \@files;
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, [ sort @expected ], "all() gives sorted order" )
+      or diag explain \@files;
 
-  @files = map  { unixify($_, $td) } $rule->all_fast($td);
-  cmp_deeply( \@files, \@expected, "all_fast() gives disk order")
-    or diag explain \@files;
+    @files = map { unixify( $_, $td ) } $rule->all_fast($td);
+    cmp_deeply( \@files, \@expected, "all_fast() gives disk order" )
+      or diag explain \@files;
 
 }
 

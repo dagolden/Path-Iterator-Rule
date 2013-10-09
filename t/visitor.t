@@ -51,8 +51,12 @@ use Path::Iterator::Rule;
 
     @files = ();
 
-    $rule->all( $td,
-        { visitor => sub { push @files, unixify( $_, $td ) } } );
+    $rule->all(
+        $td,
+        {
+            visitor => sub { push @files, unixify( $_, $td ) }
+        }
+    );
 
     cmp_deeply( \@files, \@breadth, "Visitor (breadth)" )
       or diag explain \@files;

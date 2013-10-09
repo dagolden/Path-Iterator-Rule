@@ -26,19 +26,20 @@ my @tree = qw(
 
 push @tree, 'eeee/foo,v', 'dddd/foo.#'; # avoids warning about stuff in qw
 
-  
 my $td = make_tree(@tree);
 
 {
-  my @files;
-  my $rule = Path::Iterator::Rule->new->skip_vcs->file;
-  my $expected = [ qw(
-    aaaa.txt
-    bbbb.txt
-  )];
-  @files = map { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, $expected, "not_vcs test")
-    or diag explain { got => \@files, expected => $expected };
+    my @files;
+    my $rule     = Path::Iterator::Rule->new->skip_vcs->file;
+    my $expected = [
+        qw(
+          aaaa.txt
+          bbbb.txt
+          )
+    ];
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "not_vcs test" )
+      or diag explain { got => \@files, expected => $expected };
 }
 
 done_testing;

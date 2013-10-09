@@ -26,29 +26,31 @@ my @bin = qw(
   bin/bar
 );
 
-my $td = make_tree(@tree, @bin);
+my $td = make_tree( @tree, @bin );
 
-for my $f ( map { path($td, $_) } @bin ) {
-  next if $f =~ /foo\.pl/;
-  my $fh = $f->openw;
-  print {$fh} ( $f =~ 'bin/bar' ? "#!/usr/bin/env perl\n" : "#!/usr/bin/perl\n");
-  $fh->close;
+for my $f ( map { path( $td, $_ ) } @bin ) {
+    next if $f =~ /foo\.pl/;
+    my $fh = $f->openw;
+    print {$fh} ( $f =~ 'bin/bar' ? "#!/usr/bin/env perl\n" : "#!/usr/bin/perl\n" );
+    $fh->close;
 }
 
 {
-  my @files;
-  my $rule = Path::Iterator::Rule->new->perl_file;
-  my $expected = [ qw(
-    bin/bar
-    bin/foo
-    bin/foo.pl
-    lib/Foo.pm
-    lib/Foo.pod
-    t/test.t
-  )];
-  @files = map { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, $expected, "all perl files")
-    or diag explain { got => \@files, expected => $expected };
+    my @files;
+    my $rule     = Path::Iterator::Rule->new->perl_file;
+    my $expected = [
+        qw(
+          bin/bar
+          bin/foo
+          bin/foo.pl
+          lib/Foo.pm
+          lib/Foo.pod
+          t/test.t
+          )
+    ];
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "all perl files" )
+      or diag explain { got => \@files, expected => $expected };
 }
 
 done_testing;

@@ -11,13 +11,13 @@ use warnings::register;
 
 # Dependencies
 use re 'regexp_pattern';
-use Carp ();
+use Carp           ();
 use File::Basename ();
-use File::Spec ();
-use List::Util ();
+use File::Spec     ();
+use List::Util     ();
 use Number::Compare 0.02;
 use Scalar::Util ();
-use Text::Glob ();
+use Text::Glob   ();
 use Try::Tiny;
 
 #--------------------------------------------------------------------------#
@@ -32,7 +32,7 @@ sub new {
 
 sub clone {
     my $self = shift;
-    return bless _my_clone({%$self}), ref $self;
+    return bless _my_clone( {%$self} ), ref $self;
 }
 
 # avoid XS/buggy dependencies for a simple recursive clone; we clone
@@ -42,7 +42,8 @@ sub _my_clone {
     my $d = shift;
     if ( ref $d eq 'HASH' ) {
         return {
-            map {; my $v=$d->{$_}; $_ => ( ref($v) ? _my_clone($v) : $v ) } keys %$d
+            map { ; my $v = $d->{$_}; $_ => ( ref($v) ? _my_clone($v) : $v ) }
+              keys %$d
         };
     }
     elsif ( ref $d eq 'ARRAY' ) {
@@ -143,7 +144,7 @@ sub _iter {
     my $args =
         ref( $_[0] )  && !Scalar::Util::blessed( $_[0] )  ? shift
       : ref( $_[-1] ) && !Scalar::Util::blessed( $_[-1] ) ? pop
-      :                                       {};
+      :                                                     {};
     my %opts = ( %$defaults, %$args );
 
     # unroll these for efficiency
@@ -165,7 +166,10 @@ sub _iter {
     # if object is arrayref, then that's a special case signal that it
     # was already of interest and can finally be returned for postorder searches
     my @queue =
-      map { my $i = $self->_objectify($_); ( $i, File::Basename::basename("$_"), 0, $i ) } @_ ? @_ : '.';
+      map {
+        my $i = $self->_objectify($_);
+        ( $i, File::Basename::basename("$_"), 0, $i )
+      } @_ ? @_ : '.';
 
     return sub {
         LOOP: {
@@ -241,7 +245,14 @@ sub _iter {
                     if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
                         # without being retested
-                        push @next, [ ( $opt_relative ? $self->_objectify(File::Spec->abs2rel( $string_item, $origin )) : $item ) ],
+                        push @next,
+                          [
+                            (
+                                  $opt_relative
+                                ? $self->_objectify( File::Spec->abs2rel( $string_item, $origin ) )
+                                : $item
+                            )
+                          ],
                           $base, $depth, $origin
                           if $interest && $opt_depthfirst > 0;
                         unshift @queue, @next;
@@ -252,8 +263,11 @@ sub _iter {
                     }
                 }
             }
-            return ( $opt_relative ? $self->_objectify(File::Spec->abs2rel( $string_item, $origin )) : $item )
-              if $interest;
+            return (
+                  $opt_relative
+                ? $self->_objectify( File::Spec->abs2rel( $string_item, $origin ) )
+                : $item
+            ) if $interest;
             redo LOOP;
         }
     };
@@ -330,11 +344,11 @@ sub skip {
     my $obj     = $self->new->or(@rules);
     my $coderef = sub {
         my $result = $obj->test(@_);
-        my ($prune, $interest);
+        my ( $prune, $interest );
         if ( ref($result) eq 'SCALAR' ) {
             # test told us to prune, so make that sticky
             # and also skip it
-            $prune = 1;
+            $prune    = 1;
             $interest = 0;
         }
         else {
@@ -353,8 +367,8 @@ sub test {
     my ( $result, $prune );
     for my $rule ( @{ $self->{rules} } ) {
         $result = $rule->( $item, $base, $stash ) || 0;
-        if ( ! ref($result) && $result eq '0 but true' ) {
-            Carp::croak( "0 but true no longer supported by custom rules" );
+        if ( !ref($result) && $result eq '0 but true' ) {
+            Carp::croak("0 but true no longer supported by custom rules");
         }
         # once any rule says to prune, we remember that
         $prune ||= ref($result) eq 'SCALAR';
@@ -474,7 +488,7 @@ my %complex_helpers = (
     },
     min_depth => sub {
         Carp::croak("No depth argument given to 'min_depth'") unless @_;
-        my $min_depth = 0 + shift; # if this warns, do here and not on every file
+        my $min_depth = 0+ shift; # if this warns, do here and not on every file
         return sub {
             my ( $f, $b, $stash ) = @_;
             return $stash->{_depth} >= $min_depth;
@@ -482,7 +496,7 @@ my %complex_helpers = (
     },
     max_depth => sub {
         Carp::croak("No depth argument given to 'max_depth'") unless @_;
-        my $max_depth = 0 + shift; # if this warns, do here and not on every file
+        my $max_depth = 0+ shift; # if this warns, do here and not on every file
         return sub {
             my ( $f, $b, $stash ) = @_;
             return 1  if $stash->{_depth} < $max_depth;
@@ -528,7 +542,7 @@ my %complex_helpers = (
             my $f = shift;
             return unless !-d $f;
             open my $fh, "<$filter", $f;
-            while (my $line = <$fh>) {
+            while ( my $line = <$fh> ) {
                 for my $re (@regexp) {
                     return 1 if $line =~ $re;
                 }

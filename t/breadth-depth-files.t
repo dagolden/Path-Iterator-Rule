@@ -14,43 +14,42 @@ use Path::Iterator::Rule;
 #--------------------------------------------------------------------------#
 
 {
-  my @tree = qw(
-    aaaa.txt
-    bbbb.txt
-    cccc/dddd.txt
-    cccc/eeee/ffff.txt
-    gggg.txt
-  );
+    my @tree = qw(
+      aaaa.txt
+      bbbb.txt
+      cccc/dddd.txt
+      cccc/eeee/ffff.txt
+      gggg.txt
+    );
 
+    my @depth_pre = qw(
+      aaaa.txt
+      bbbb.txt
+      cccc/dddd.txt
+      cccc/eeee/ffff.txt
+      gggg.txt
+    );
 
-  my @depth_pre = qw(
-    aaaa.txt
-    bbbb.txt
-    cccc/dddd.txt
-    cccc/eeee/ffff.txt
-    gggg.txt
-  );
+    my @depth_post = qw(
+      aaaa.txt
+      bbbb.txt
+      cccc/dddd.txt
+      cccc/eeee/ffff.txt
+      gggg.txt
+    );
 
-  my @depth_post = qw(
-    aaaa.txt
-    bbbb.txt
-    cccc/dddd.txt
-    cccc/eeee/ffff.txt
-    gggg.txt
-  );
+    my $td = make_tree(@tree);
 
-  my $td = make_tree(@tree);
+    my ( $iter, @files );
+    my $rule = Path::Iterator::Rule->new->file;
 
-  my ($iter, @files);
-  my $rule = Path::Iterator::Rule->new->file;
+    @files = map { unixify( $_, $td ) } $rule->all( { depthfirst => -1 }, $td );
+    cmp_deeply( \@files, \@depth_pre, "Depth first iteration (pre)" )
+      or diag explain \@files;
 
-  @files = map  { unixify($_, $td) } $rule->all({depthfirst => -1}, $td);
-  cmp_deeply( \@files, \@depth_pre, "Depth first iteration (pre)")
-    or diag explain \@files;
-
-  @files = map  { unixify($_, $td) } $rule->all({depthfirst => 1}, $td);
-  cmp_deeply( \@files, \@depth_post, "Depth first iteration (post)")
-    or diag explain \@files;
+    @files = map { unixify( $_, $td ) } $rule->all( { depthfirst => 1 }, $td );
+    cmp_deeply( \@files, \@depth_post, "Depth first iteration (post)" )
+      or diag explain \@files;
 
 }
 

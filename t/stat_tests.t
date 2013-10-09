@@ -15,26 +15,28 @@ use Path::Iterator::Rule;
 #--------------------------------------------------------------------------#
 
 {
-  my ($rule, @files);
+    my ( $rule, @files );
 
-  my $td = make_tree(qw(
-    data/file1.txt
-  ));
+    my $td = make_tree(
+        qw(
+          data/file1.txt
+          )
+    );
 
-  my $changes = path($td, 'data', 'Changes');
+    my $changes = path( $td, 'data', 'Changes' );
 
-  path('Changes')->copy( $changes );
+    path('Changes')->copy($changes);
 
-  $rule = Path::Iterator::Rule->new->file;
+    $rule = Path::Iterator::Rule->new->file;
 
-  @files = ();
-  @files = $rule->all($td);
-  is( scalar @files, 2, "Any file") or diag explain \@files;
+    @files = ();
+    @files = $rule->all($td);
+    is( scalar @files, 2, "Any file" ) or diag explain \@files;
 
-  $rule = Path::Iterator::Rule->new->file->size(">0k");
-  @files = ();
-  @files = $rule->all($td);
-  filename_is( $files[0], $changes, "size > 0") or diag explain \@files;
+    $rule  = Path::Iterator::Rule->new->file->size(">0k");
+    @files = ();
+    @files = $rule->all($td);
+    filename_is( $files[0], $changes, "size > 0" ) or diag explain \@files;
 
 }
 

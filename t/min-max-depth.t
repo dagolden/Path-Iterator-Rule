@@ -26,41 +26,47 @@ my @tree = qw(
 my $td = make_tree(@tree);
 
 {
-  my @files;
-  my $rule = Path::Iterator::Rule->new->file->min_depth(3);
-  my $expected = [ qw(
-    cccc/eeee/ffff.txt
-    hhhh/iiii/jjjj/kkkk/llll/mmmm.txt
-  )];
-  @files = map { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, $expected, "min_depth(3) test")
-    or diag explain { got => \@files, expected => $expected };
+    my @files;
+    my $rule     = Path::Iterator::Rule->new->file->min_depth(3);
+    my $expected = [
+        qw(
+          cccc/eeee/ffff.txt
+          hhhh/iiii/jjjj/kkkk/llll/mmmm.txt
+          )
+    ];
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "min_depth(3) test" )
+      or diag explain { got => \@files, expected => $expected };
 }
 
 {
-  my @files;
-  my $rule = Path::Iterator::Rule->new->max_depth(2)->file;
-  my $expected = [ qw(
-    aaaa.txt
-    bbbb.txt
-    gggg.txt
-    cccc/dddd.txt
-  )];
-  @files = map { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, $expected, "max_depth(2) test")
-    or diag explain { got => \@files, expected => $expected };
+    my @files;
+    my $rule     = Path::Iterator::Rule->new->max_depth(2)->file;
+    my $expected = [
+        qw(
+          aaaa.txt
+          bbbb.txt
+          gggg.txt
+          cccc/dddd.txt
+          )
+    ];
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "max_depth(2) test" )
+      or diag explain { got => \@files, expected => $expected };
 }
 
 {
-  my @files;
-  my $rule = Path::Iterator::Rule->new->file->min_depth(2)->max_depth(3);
-  my $expected = [ qw(
-    cccc/dddd.txt
-    cccc/eeee/ffff.txt
-  )];
-  @files = map { unixify($_, $td) } $rule->all($td);
-  cmp_deeply( \@files, $expected, "min_depth(2)->max_depth(3) test")
-    or diag explain { got => \@files, expected => $expected };
+    my @files;
+    my $rule     = Path::Iterator::Rule->new->file->min_depth(2)->max_depth(3);
+    my $expected = [
+        qw(
+          cccc/dddd.txt
+          cccc/eeee/ffff.txt
+          )
+    ];
+    @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "min_depth(2)->max_depth(3) test" )
+      or diag explain { got => \@files, expected => $expected };
 }
 done_testing;
 # COPYRIGHT

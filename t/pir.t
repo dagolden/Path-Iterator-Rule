@@ -13,45 +13,47 @@ use PIR;
 #--------------------------------------------------------------------------#
 
 {
-  my $td = make_tree(qw(
-    empty/
-    data/file1.txt
-  ));
+    my $td = make_tree(
+        qw(
+          empty/
+          data/file1.txt
+          )
+    );
 
-  my ($iter, @files);
-  my $rule = PIR->new->file;
+    my ( $iter, @files );
+    my $rule = PIR->new->file;
 
-  $iter = $rule->iter($td);
+    $iter = $rule->iter($td);
 
-  @files = ();
-  while ( my $f = $iter->() ) {
-    push @files, $f;
-  }
+    @files = ();
+    while ( my $f = $iter->() ) {
+        push @files, $f;
+    }
 
-  is( scalar @files, 1, "Iterator: one file") or diag explain \@files;
-  is( ref $files[0], '', "Iterator: returns string, not object" );
+    is( scalar @files, 1, "Iterator: one file" ) or diag explain \@files;
+    is( ref $files[0], '', "Iterator: returns string, not object" );
 
-  @files = ();
-  @files = $rule->all($td);
+    @files = ();
+    @files = $rule->all($td);
 
-  is( scalar @files, 1, "All: one file") or diag explain \@files;
+    is( scalar @files, 1, "All: one file" ) or diag explain \@files;
 
-  $rule = PIR->new->dir;
-  @files = ();
-  @files = map { "$_" } $rule->all($td);
+    $rule  = PIR->new->dir;
+    @files = ();
+    @files = map { "$_" } $rule->all($td);
 
-  is( scalar @files, 3, "All: 3 directories") or diag explain \@files;
+    is( scalar @files, 3, "All: 3 directories" ) or diag explain \@files;
 
-  my $wd = pushd($td);
+    my $wd = pushd($td);
 
-  @files = ();
-  @files = map { "$_" } $rule->all();
-  is( scalar @files, 3, "All w/ cwd: 3 directories") or diag explain \@files;
+    @files = ();
+    @files = map { "$_" } $rule->all();
+    is( scalar @files, 3, "All w/ cwd: 3 directories" ) or diag explain \@files;
 
-  $rule->skip_dirs(qw/data/);
-  @files = ();
-  @files = map { "$_" } $rule->all();
-  is( scalar @files, 2, "All w/ prune: 2 directories") or diag explain \@files;
+    $rule->skip_dirs(qw/data/);
+    @files = ();
+    @files = map { "$_" } $rule->all();
+    is( scalar @files, 2, "All w/ prune: 2 directories" ) or diag explain \@files;
 }
 
 done_testing;

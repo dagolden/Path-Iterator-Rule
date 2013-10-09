@@ -24,7 +24,9 @@ can_ok( 'Path::Iterator::Rule', 'txt' );
 # check we can do this via object, too
 my $rule = Path::Iterator::Rule->new;
 
-eval { $rule->add_helper( txt => sub { 1 } ) };
+eval {
+    $rule->add_helper( txt => sub { 1 } );
+};
 like( $@, qr/Can't add rule 'txt'/, "exception if helper exists" );
 
 {
@@ -38,7 +40,7 @@ like( $@, qr/Can't add rule 'txt'/, "exception if helper exists" );
 
     my ( $iter, @files );
     my $rule = Path::Iterator::Rule->new->file->txt;
-    @files = $rule->all($td, {relative => 1});
+    @files = $rule->all( $td, { relative => 1 } );
     is( scalar @files, 1, "All: one file" ) or diag explain \@files;
     filename_is( $files[0], "data/file1.txt", "got expected file" )
 }

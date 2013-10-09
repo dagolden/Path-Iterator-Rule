@@ -162,10 +162,7 @@ my $td = make_tree(@tree);
     my @files;
     my $rule = PIR->new;
     $rule->and(
-        PIR->new->or(
-            sub { return \0 if /eeee/; return 0 },
-            sub { return 1 },
-        ),
+        PIR->new->or( sub { return \0 if /eeee/; return 0 }, sub { return 1 }, ),
         PIR->new->and( sub { /eeee/ } ),
     );
     my $expected = [
