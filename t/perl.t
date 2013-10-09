@@ -1,7 +1,6 @@
 use 5.006;
 use strict;
 use warnings;
-use autodie;
 use Test::More 0.92;
 use Path::Tiny;
 use File::Temp;

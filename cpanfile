@@ -25,7 +25,6 @@ on 'test' => sub {
   requires "Test::Deep" => "0";
   requires "Test::Filename" => "0.03";
   requires "Test::More" => "0.92";
-  requires "autodie" => "0";
   requires "lib" => "0";
 };
 
