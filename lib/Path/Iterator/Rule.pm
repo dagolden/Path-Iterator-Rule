@@ -12,7 +12,6 @@ use warnings::register;
 # Dependencies
 use re 'regexp_pattern';
 use Carp;
-use Data::Clone qw/data_clone/;
 use File::Basename qw/basename/;
 use File::Spec;
 use List::Util qw/first/;
@@ -35,7 +34,25 @@ sub new {
 
 sub clone {
     my $self = shift;
-    return data_clone($self);
+    return bless _my_clone({%$self}), ref $self;
+}
+
+# avoid XS/buggy dependencies for a simple recursive clone; we clone
+# fully instead of just 'rules' in case we get subclassed and they
+# add attributes
+sub _my_clone {
+    my $d = shift;
+    if ( ref $d eq 'HASH' ) {
+        return {
+            map {; my $v=$d->{$_}; $_ => ( ref($v) ? _my_clone($v) : $v ) } keys %$d
+        };
+    }
+    elsif ( ref $d eq 'ARRAY' ) {
+        return [ map { ref($_) ? _my_clone($_) : $_ } @$d ];
+    }
+    else {
+        return $d;
+    }
 }
 
 sub add_helper {

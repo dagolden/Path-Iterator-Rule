@@ -6,6 +6,10 @@ Revision history for Path-Iterator-Rule
 
     - Fixed a typo
 
+    [PREREQS]
+
+    - Removed dependency on Data::Clone
+
 1.005     2013-04-02 09:33:44 America/New_York
 
     [FIXED]
