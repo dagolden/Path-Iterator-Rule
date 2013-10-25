@@ -1,3 +1,4 @@
+
 =head1 USAGE
 
 =head2 Constructors
@@ -475,7 +476,7 @@ if the filename is "foo":
     foo => sub {
       my @args = @_; # do this to customize closure with arguments
       return sub {
-        my ($item, $basename) = shift;
+        my ($item, $basename) = @_;
         return if -d "$item";
         return $basename =~ /^foo$/;
       }
