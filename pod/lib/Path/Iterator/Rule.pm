@@ -93,6 +93,8 @@ Returns a list of paths that match the rule.  It takes the same arguments and
 has the same behaviors as the C<iter> method.  The C<all> method uses C<iter>
 internally to fetch all results.
 
+In scalar context, it will return the count of matched paths.
+
 In void context, it is optimized to iterate over everything, but not store
 results.  This is most useful with the C<visitor> option:
 
