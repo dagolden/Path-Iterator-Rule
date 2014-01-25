@@ -286,15 +286,20 @@ sub all_fast {
 sub _all {
     my $self = shift;
     my $iter = shift;
-    if ( defined wantarray ) {
+    if (wantarray) {
         my @results;
-        while ( my $item = $iter->() ) {
+        while ( defined( my $item = $iter->() ) ) {
             push @results, $item;
         }
         return @results;
     }
+    elsif ( defined wantarray ) {
+        my $count = 0;
+        $count++ while defined $iter->();
+        return $count;
+    }
     else {
-        1 while $iter->();
+        1 while defined $iter->();
     }
 }
 
