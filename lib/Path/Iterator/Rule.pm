@@ -708,7 +708,7 @@ while ( my ( $name, $coderef ) = each %perl_rules ) {
 
   # iterator interface
   my $next = $rule->iter( @dirs );
-  while ( my $file = $next->() ) {
+  while ( defined( my $file = $next->() ) ) {
     ...
   }
 

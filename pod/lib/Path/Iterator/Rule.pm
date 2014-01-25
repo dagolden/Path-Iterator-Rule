@@ -25,7 +25,7 @@ rule objects against a common base.
 =head3 C<iter>
 
   my $next = $rule->iter( @dirs, \%options);
-  while ( my $file = $next->() ) {
+  while ( defined( my $file = $next->() ) ) {
     ...
   }
 
@@ -76,6 +76,8 @@ search directories are not mutually exclusive (whether containing
 subdirectories like C<@INC> or symbolic links), files found could be returned
 relative to different initial search directories based on C<depthfirst>,
 C<follow_symlinks> or C<loop_safe>.
+
+When the iterator is exhausted, it will return undef.
 
 =head3 C<iter_fast>
 

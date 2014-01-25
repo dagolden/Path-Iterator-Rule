@@ -23,7 +23,7 @@ our @ISA = qw/Path::Iterator::Rule/;
 
   # iterator interface
   my $next = $rule->iter( @dirs );
-  while ( my $file = $next->() ) {
+  while ( defined( my $file = $next->() ) ) {
     ...
   }
 
