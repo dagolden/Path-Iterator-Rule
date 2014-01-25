@@ -44,6 +44,8 @@ require_ok('Path::Iterator::Rule');
     is( scalar @files, 3, "All files" ) or diag explain \@files;
     is( $count, 3, "All files (scalar context)" ) or diag explain \@files;
 
+    is( $rule->all($td), 3, "All files (->all in scalar context)");
+
     $rule  = Path::Iterator::Rule->new->dir;
     @files = ();
     @files = map { "$_" } $rule->all($td);
