@@ -39,8 +39,10 @@ require_ok('Path::Iterator::Rule');
 
     @files = ();
     @files = $rule->all($td);
+    my $count = $rule->all($td);
 
     is( scalar @files, 3, "All files" ) or diag explain \@files;
+    is( $count, 3, "All files (scalar context)" ) or diag explain \@files;
 
     $rule  = Path::Iterator::Rule->new->dir;
     @files = ();
