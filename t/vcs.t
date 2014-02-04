@@ -19,6 +19,7 @@ my @tree = qw(
   cccc/.bzr/foo
   cccc/.git/foo
   cccc/.hg/foo
+  cccc/_darcs/foo
   cccc/CVS/foo
   cccc/RCS/foo
 );

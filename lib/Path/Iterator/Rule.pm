@@ -660,8 +660,11 @@ my %vcs_rules = (
     skip_hg => sub {
         return Path::Iterator::Rule->new->skip_dirs('.hg');
     },
+    skip_darcs => sub {
+        return Path::Iterator::Rule->new->skip_dirs('_darcs');
+    },
     skip_vcs => sub {
-        return Path::Iterator::Rule->new->skip_dirs(qw/.git .bzr .hg CVS RCS/)
+        return Path::Iterator::Rule->new->skip_dirs(qw/.git .bzr .hg _darcs CVS RCS/)
           ->skip_svn->not_name( qr/\.\#$/, qr/,v$/ );
     },
 );

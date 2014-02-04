@@ -320,6 +320,7 @@ of Perl distribution files.
   $rule->skip_git;
   $rule->skip_bzr;
   $rule->skip_hg;
+  $rule->skip_darcs;
 
 Skips files and/or prunes directories related to a version control system.
 Just like C<skip_dirs>, these rules should be specified early to get the
