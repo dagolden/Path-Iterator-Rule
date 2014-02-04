@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [ADDED]
+
+    - Added VCS rules for DARCS (Gian Piero Carrubba)
+
 1.007     2014-01-25 14:39:09-05:00 America/New_York
 
     [DOCS]
