@@ -34,7 +34,7 @@ sub test {
 
 {
     my $ruleA = Path::Iterator::Rule->new->file;
-    my $ruleB = $ruleA->new->name("*bb*");
+    my $ruleB = $ruleA->new->file->name("*bb*");
     $ruleA->name("*aa*");
 
     test( 'new *aa*', $ruleA => [qw/aaaa.txt aaaabbbb.txt/] );
