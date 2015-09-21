@@ -4,7 +4,7 @@ use warnings;
 
 package Path::Iterator::Rule;
 # ABSTRACT: Iterative, recursive file finder
-# VERSION
+our $VERSION = '1.009';
 
 # Register warnings category
 use warnings::register;
