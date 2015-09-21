@@ -432,6 +432,7 @@ sub _regexify {
     my ( $re, $add ) = @_;
     $add ||= '';
     my $new = ref($re) eq 'Regexp' ? $re : Text::Glob::glob_to_regex($re);
+    return $new unless $add;
     my ( $pattern, $flags ) = regexp_pattern($new);
     my $new_flags = $add ? _reflag( $flags, $add ) : "";
     return qr/$new_flags$pattern/;

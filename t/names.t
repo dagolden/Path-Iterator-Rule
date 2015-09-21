@@ -55,6 +55,32 @@ my $td = make_tree(@tree);
 }
 
 {
+    my $rule     = Path::Iterator::Rule->new->name(qr/foo/i);
+    my $expected = [
+        qw(
+          lib/Foo.pm
+          lib/Foo.pod
+          )
+    ];
+    my @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "name(qr/Foo/) match" )
+      or diag explain { got => \@files, expected => $expected };
+}
+
+{
+    my $rule     = Path::Iterator::Rule->new->name(qr/ foo /ix);
+    my $expected = [
+        qw(
+          lib/Foo.pm
+          lib/Foo.pod
+          )
+    ];
+    my @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "name(qr/Foo/) match" )
+      or diag explain { got => \@files, expected => $expected };
+}
+
+{
     my $rule = Path::Iterator::Rule->new->name( "*.pod", "*.pm" );
     my $expected = [
         qw(
@@ -69,6 +95,19 @@ my $td = make_tree(@tree);
 
 {
     my $rule     = Path::Iterator::Rule->new->iname(qr/foo/);
+    my $expected = [
+        qw(
+          lib/Foo.pm
+          lib/Foo.pod
+          )
+    ];
+    my @files = map { unixify( $_, $td ) } $rule->all($td);
+    cmp_deeply( \@files, $expected, "iname(qr/foo/) match" )
+      or diag explain { got => \@files, expected => $expected };
+}
+
+{
+    my $rule     = Path::Iterator::Rule->new->iname(qr/ foo /x);
     my $expected = [
         qw(
           lib/Foo.pm
