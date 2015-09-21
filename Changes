@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+1.009     2015-09-20 22:02:20-04:00 America/New_York
+
     [FIXED]
 
     - Regular expressions flags were being lost.  Now name(qr/foo/i) works
