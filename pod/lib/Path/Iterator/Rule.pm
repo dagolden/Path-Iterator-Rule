@@ -41,6 +41,7 @@ current directory is used (C<".">).  Valid options include:
 * C<depthfirst> -- Controls order of results.  Valid values are "1" (post-order, depth-first search), "0" (breadth-first search) or "-1" (pre-order, depth-first search). Default is 0.
 * C<error_handler> -- Catches errors during execution of rule tests. Default handler dies with the filename and error. If set to undef, error handling is disabled.
 * C<follow_symlinks> -- Follow directory symlinks when true. Default is 1.
+* C<report_symlinks> -- Includes symlinks in results when true. Default is equal to C<follow_symlinks>.
 * C<loop_safe> -- Prevents visiting the same directory more than once when true.  Default is 1.
 * C<relative> -- Return matching items relative to the search directory. Default is 0.
 * C<sorted> -- Whether entries in a directory are sorted before processing. Default is 1.
@@ -50,7 +51,12 @@ Filesystem loops might exist from either hard or soft links.  The C<loop_safe>
 option prevents infinite loops, but adds some overhead by making C<stat> calls.
 Because directories are visited only once when C<loop_safe> is true, matches
 could come from a symlinked directory before the real directory depending on
-the search order.  To get only the real files, turn off C<follow_symlinks>.
+the search order.
+
+To get only the real files, turn off C<follow_symlinks>.  You can have
+symlinks included in results, but not descend into symlink directories if
+you turn off C<follow_symlinks>, but turn on C<report_symlinks>.
+
 Turning C<loop_safe> off and leaving C<follow_symlinks> on avoids C<stat> calls
 and will be fastest, but with the risk of an infinite loop and repeated files.
 The default is slow, but safe.

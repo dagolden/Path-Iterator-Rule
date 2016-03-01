@@ -159,6 +159,11 @@ sub _iter {
     my $has_rules           = @{ $self->{rules} };
     my $stash               = {};
 
+    my $opt_report_symlinks =
+      defined( $opts{report_symlinks} )
+      ? $opts{report_symlinks}
+      : $opts{follow_symlinks};
+
     # if not subclassed, we want to inline
     my $can_children = $self->can("_children");
 
@@ -177,12 +182,15 @@ sub _iter {
             return unless $item;
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
             my $string_item = $opt_stringify ? "$item" : $item;
-            if ( !$opt_follow_symlinks ) {
-                redo LOOP if -l $string_item;
-            }
 
             # by default, we're interested in everything and prune nothing
             my ( $interest, $prune ) = ( 1, 0 );
+
+            if ( -l $string_item ) {
+                $prune = 1 if !$opt_follow_symlinks;
+                redo LOOP if !$opt_report_symlinks;
+            }
+
             if ($has_rules) {
                 local $_ = $item;
                 $stash->{_depth} = $depth;

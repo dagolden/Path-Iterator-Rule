@@ -56,7 +56,20 @@ plan skip_all => "No symlink support"
       cccc/eeee/ffff.txt
     );
 
-    my @nofollow = qw(
+    my @nofollow_report = qw(
+      .
+      aaaa.txt
+      bbbb.txt
+      cccc
+      gggg.txt
+      pppp
+      qqqq.txt
+      cccc/dddd.txt
+      cccc/eeee
+      cccc/eeee/ffff.txt
+    );
+
+    my @nofollow_noreport = qw(
       .
       aaaa.txt
       bbbb.txt
@@ -83,9 +96,15 @@ plan skip_all => "No symlink support"
     cmp_deeply( \@files, \@not_loop_safe, "Follow symlinks, but loop_safe = 0" )
       or diag explain { got => \@files, expected => \@not_loop_safe };
 
-    @files = map { unixify( $_, $td ) } $rule->all( { follow_symlinks => 0 }, $td );
-    cmp_deeply( \@files, \@nofollow, "Don't follow symlinks" )
-      or diag explain { got => \@files, expected => \@nofollow };
+    @files = map { unixify( $_, $td ) }
+      $rule->all( { follow_symlinks => 0, report_symlinks => 1 }, $td );
+    cmp_deeply( \@files, \@nofollow_report, "Don't follow symlinks, but report them" )
+      or diag explain { got => \@files, expected => \@nofollow_report };
+
+    @files = map { unixify( $_, $td ) }
+      $rule->all( { follow_symlinks => 0, report_symlinks => 0 }, $td );
+    cmp_deeply( \@files, \@nofollow_noreport, "Don't follow or report symlinks" )
+      or diag explain { got => \@files, expected => \@nofollow_noreport };
 
 }
 
