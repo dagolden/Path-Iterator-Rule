@@ -2,6 +2,11 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [FIXED]
+
+    - Protects tests from temporary directory names that cause false
+      errors.
+
 1.009     2015-09-20 22:02:20-04:00 America/New_York
 
     [FIXED]
