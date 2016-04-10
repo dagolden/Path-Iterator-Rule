@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+1.012     2016-04-10 13:45:55-04:00 America/New_York
+
     [PREREQS]
 
     - Dropped minimum Perl version required to 5.008001
