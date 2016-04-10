@@ -1,4 +1,4 @@
-use 5.010; # re::regexp_pattern
+use 5.008001;
 use strict;
 use warnings;
 
@@ -9,8 +9,9 @@ our $VERSION = '1.012';
 # Register warnings category
 use warnings::register;
 
+use if $] ge '5.010000', 're', 'regexp_pattern';
+
 # Dependencies
-use re 'regexp_pattern';
 use Carp           ();
 use File::Basename ();
 use File::Spec     ();
@@ -441,9 +442,23 @@ sub _regexify {
     $add ||= '';
     my $new = ref($re) eq 'Regexp' ? $re : Text::Glob::glob_to_regex($re);
     return $new unless $add;
-    my ( $pattern, $flags ) = regexp_pattern($new);
+    my ( $pattern, $flags ) = _split_re($new);
     my $new_flags = $add ? _reflag( $flags, $add ) : "";
     return qr/$new_flags$pattern/;
+}
+
+sub _split_re {
+    my $value = shift;
+    if ( $] ge 5.010 ) {
+        return re::regexp_pattern($value);
+    }
+    else {
+        $value =~ s/^\(\?\^?//;
+        $value =~ s/\)$//;
+        my ( $opt, $re ) = split( /:/, $value, 2 );
+        $opt =~ s/\-\w+$//;
+        return ( $re, $opt );
+    }
 }
 
 sub _reflag {

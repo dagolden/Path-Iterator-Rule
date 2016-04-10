@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use 5.010;
+use 5.008001;
 
 use ExtUtils::MakeMaker 6.17;
 
@@ -13,7 +13,7 @@ my %WriteMakefileArgs = (
   },
   "DISTNAME" => "Path-Iterator-Rule",
   "LICENSE" => "apache",
-  "MIN_PERL_VERSION" => "5.010",
+  "MIN_PERL_VERSION" => "5.008001",
   "NAME" => "Path::Iterator::Rule",
   "PREREQ_PM" => {
     "Carp" => 0,
@@ -24,7 +24,7 @@ my %WriteMakefileArgs = (
     "Scalar::Util" => 0,
     "Text::Glob" => 0,
     "Try::Tiny" => 0,
-    "re" => 0,
+    "if" => 0,
     "strict" => 0,
     "warnings" => 0,
     "warnings::register" => 0
@@ -65,8 +65,8 @@ my %FallbackPrereqs = (
   "Test::More" => "0.92",
   "Text::Glob" => 0,
   "Try::Tiny" => 0,
+  "if" => 0,
   "lib" => 0,
-  "re" => 0,
   "strict" => 0,
   "warnings" => 0,
   "warnings::register" => 0

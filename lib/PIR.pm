@@ -1,4 +1,4 @@
-use 5.010; # re::regexp_pattern
+use 5.008001;
 use strict;
 use warnings;
 
