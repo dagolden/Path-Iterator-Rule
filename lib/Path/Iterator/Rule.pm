@@ -179,6 +179,10 @@ sub _iter {
 
     return sub {
         LOOP: {
+              if ( ref $queue[0] eq 'CODE' ) {
+                  unshift @queue, shift(@queue)->();
+                  redo LOOP;
+              }
             my ( $item, $base, $depth, $origin ) = splice( @queue, 0, 4 );
             return unless $item;
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
@@ -218,6 +222,7 @@ sub _iter {
                 $stash->{_depth} = $depth;
                 $opt_visitor->( $item, $base, $stash );
             }
+            $DB::single=1;
 
             # if it's a directory, maybe add children to the queue
             if (   ( -d $string_item )
@@ -230,31 +235,34 @@ sub _iter {
                 else {
                     my @next;
                     my $depth_p1 = $depth + 1;
+                    my $next;
                     if ($can_children) {
-                        my @paths = $can_children->( $self, $item );
-                        if ($opt_sorted) {
-                            @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
-                        }
-                        @next = map { ( $_->[1], $_->[0], $depth_p1, $origin ) } @paths;
+                        $next = sub {
+                            my @paths = $can_children->( $self, $item );
+                            if ($opt_sorted) {
+                                @paths = sort { "$a->[0]" cmp "$b->[0]" } @paths;
+                            }
+                            map { ( $_->[1], $_->[0], $depth_p1, $origin ) } @paths;
+                        };
                     }
                     else {
+                        $next = sub {
                         opendir( my $dh, $string_item );
                         if ($opt_sorted) {
-                            @next =
                               map { ( "$string_item/$_", $_, $depth_p1, $origin ) }
                               sort { $a cmp $b } grep { $_ ne "." && $_ ne ".." } readdir $dh;
                         }
                         else {
-                            @next =
                               map { ( "$string_item/$_", $_, $depth_p1, $origin ) }
                               grep { $_ ne "." && $_ ne ".." } readdir $dh;
                         }
+                    };
                     }
 
                     if ($opt_depthfirst) {
                         # for postorder, requeue as reference to signal it can be returned
                         # without being retested
-                        push @next,
+                        unshift @queue, 
                           [
                             (
                                   $opt_relative
@@ -264,11 +272,11 @@ sub _iter {
                           ],
                           $base, $depth, $origin
                           if $interest && $opt_depthfirst > 0;
-                        unshift @queue, @next;
+                        unshift @queue, $next;
                         redo LOOP if $opt_depthfirst > 0;
                     }
                     else {
-                        push @queue, @next;
+                        push @queue, $next;
                     }
                 }
             }
