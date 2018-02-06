@@ -222,7 +222,6 @@ sub _iter {
                 $stash->{_depth} = $depth;
                 $opt_visitor->( $item, $base, $stash );
             }
-            $DB::single=1;
 
             # if it's a directory, maybe add children to the queue
             if (   ( -d $string_item )
