@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+1.013     2018-06-20 16:48:23-06:00 America/Denver
+
     [CHANGED]
 
     - Breadth-first search now reads children lazily on demand,
