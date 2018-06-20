@@ -2,6 +2,11 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [CHANGED]
+
+    - Breadth-first search now reads children lazily on demand,
+      instead of pre-computing children and adding them to the queue.
+
 1.012     2016-04-10 13:45:55-04:00 America/New_York
 
     [PREREQS]
