@@ -168,9 +168,11 @@ sub _iter {
     # if not subclassed, we want to inline
     my $can_children = $self->can("_children");
 
-    # queue structure: flat list in tuples of 4: (object, basename, depth, origin)
-    # if object is arrayref, then that's a special case signal that it
-    # was already of interest and can finally be returned for postorder searches
+    # queue structure: flat list of (unnested) tuples of 4 (object,
+    # basename, depth, origin).  If object is a coderef, it's a deferred
+    # directory list.  If the object is an arrayref, then that's a special
+    # case signal that it was already of interest and can finally be
+    # returned for postorder searches
     my @queue =
       map {
         my $i = $self->_objectify($_);
@@ -179,12 +181,13 @@ sub _iter {
 
     return sub {
         LOOP: {
-            if ( ref $queue[0] eq 'CODE' ) {
-                unshift @queue, shift(@queue)->();
-                redo LOOP;
-            }
             my ( $item, $base, $depth, $origin ) = splice( @queue, 0, 4 );
             return unless $item;
+            if ( ref $item eq 'CODE' ) {
+                # replace placeholder with children
+                unshift @queue, $item->();
+                redo LOOP;
+            }
             return $item->[0] if ref $item eq 'ARRAY'; # deferred for postorder
             my $string_item = $opt_stringify ? "$item" : $item;
 
@@ -231,7 +234,6 @@ sub _iter {
                     warnings::warnif("Directory '$string_item' is not readable. Skipping it");
                 }
                 else {
-                    my @next;
                     my $depth_p1 = $depth + 1;
                     my $next;
                     if ($can_children) {
@@ -258,8 +260,10 @@ sub _iter {
                     }
 
                     if ($opt_depthfirst) {
-                        # for postorder, requeue as reference to signal it can be returned
-                        # without being retested
+                        # either preorder (parents before kids) or
+                        # postorder (parents after kids); for postorder,
+                        # requeue current item as a reference to signal it
+                        # can be returned without being retested
                         unshift @queue,
                           [
                             (
@@ -268,16 +272,17 @@ sub _iter {
                                 : $item
                             )
                           ],
-                          $base, $depth, $origin
+                          undef, undef, undef
                           if $interest && $opt_depthfirst > 0;
-                        unshift @queue, $next;
+                        unshift @queue, $next, undef, undef, undef;
                         redo LOOP if $opt_depthfirst > 0;
                     }
                     else {
-                        push @queue, $next;
+                        # breadth-first: add placeholder for children at the end
+                        push @queue, $next, undef, undef, undef;
                     }
                 }
-            }
+            } # end of "is directory maybe with children"
             return (
                   $opt_relative
                 ? $self->_objectify( File::Spec->abs2rel( $string_item, $origin ) )

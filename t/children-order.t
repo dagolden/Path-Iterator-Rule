@@ -22,15 +22,15 @@ use Path::Iterator::Rule;
     our $td;
 
     sub new {
-      ( my $class, $td, $order ) = @_;
-      $class->SUPER::new();
+        ( my $class, $td, $order ) = @_;
+        $class->SUPER::new();
     }
 
     sub _children {
         my $self = shift;
         my $path = "" . shift;
 
-        push @$order, 'children:'. unixify( $path, $td );
+        push @$order, 'children:' . unixify( $path, $td );
 
         opendir( my $dh, $path );
         return map { [ $_, "$path/$_" ] }
@@ -85,10 +85,10 @@ use Path::Iterator::Rule;
 
     @order = ();
     my $visitor = sub {
-        push @order, 'visit:'.unixify($_, $td);
+        push @order, 'visit:' . unixify( $_, $td );
     };
-    
-    $rule->all( { depthfirst => 0, visitor => $visitor  }, $td );
+
+    $rule->all( { depthfirst => 0, visitor => $visitor }, $td );
     cmp_deeply( \@order, \@breadth, "Breadth first iteration" )
       or diag explain \@order;
 
