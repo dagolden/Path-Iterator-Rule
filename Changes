@@ -2,6 +2,10 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [DOCS]
+
+    - Noted that file separators are unix-style forward slashes.
+
 1.013     2018-06-20 16:48:23-06:00 America/Denver
 
     [CHANGED]

@@ -780,6 +780,10 @@ Here is a summary of features for comparison to other file finding modules:
 As a convenience, the L<PIR> module is an empty subclass of this one
 that is less arduous to type for one-liners.
 
+B<Note>: paths are constructed with unix-style forward-slashes for
+efficiency rather than using L<File::Spec>.  If proper path separators are
+needed, call L<canonpath|File::Spec/canonpath> on the search results.
+
 =cut
 
 # vim: ts=4 sts=4 sw=4 et:
