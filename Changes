@@ -2,6 +2,12 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+    [FIXED]
+
+    - Directories on windows that return true for `-r` but
+      false for `opendir` now warn and skip instead of attempting
+      `readdir`.
+
 1.014     2018-06-27 09:46:20-04:00 America/New_York
 
     [DOCS]

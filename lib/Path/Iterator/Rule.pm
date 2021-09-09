@@ -247,7 +247,12 @@ sub _iter {
                     }
                     else {
                         $next = sub {
-                            opendir( my $dh, $string_item );
+                            my $dh;
+                            # Windows can return true for -r but still fail opendir.
+                            if ( ! opendir( $dh, $string_item ) ) {
+                                warnings::warnif("Directory '$string_item' is not readable. Skipping it");
+                                return;
+                            }
                             if ($opt_sorted) {
                                 map { ( "$string_item/$_", $_, $depth_p1, $origin ) }
                                   sort { $a cmp $b } grep { $_ ne "." && $_ ne ".." } readdir $dh;
