@@ -2,6 +2,8 @@ Revision history for Path-Iterator-Rule
 
 {{$NEXT}}
 
+1.015     2021-09-09 12:07:00-04:00 America/New_York
+
     [FIXED]
 
     - Directories on windows that return true for `-r` but
