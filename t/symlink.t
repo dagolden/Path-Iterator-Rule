@@ -16,7 +16,7 @@ use Path::Iterator::Rule;
 #--------------------------------------------------------------------------#
 
 plan skip_all => "No symlink support"
-  unless $Config{d_symlink};
+  unless $Config{d_symlink} && $^O ne 'msys'; # symlink support in msys is broken
 
 #--------------------------------------------------------------------------#
 
